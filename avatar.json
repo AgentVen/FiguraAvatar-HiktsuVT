@@ -1,0 +1,10 @@
+{
+ 	"name": "Hiktsu",
+  	"description": "Fanmade recreation of HiktsuVT on Twitch's model in figura.",
+	"authors": ["AgentVenX","Discord@agentven"],
+	"version": "0.1.4",
+	"color": "#D33E32",
+	"autoScripts": [
+		"scripts.main"
+	]
+}
