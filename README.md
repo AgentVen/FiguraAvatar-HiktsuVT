@@ -1,2 +1,5 @@
 # FiguraAvatar-HiktsuVT
-Fanmade recreation of HiktsuVT on Twitch's model in figura.
+Fanmade FiguraMC Avatar made for HiktsuVT on Twitch.
+
+## NOTE:
+This is still ***heavily*** W.I.P. So no release for the time being.
