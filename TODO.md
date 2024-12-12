@@ -14,6 +14,7 @@
 ## Tail
 - [ ] Tail drops as the user gets hungrier. At 3 or less hungry points, tail is dragging on the ground.
 - [ ] When sitting, the tail will be proped up like how it show on Hiktsu's live model whilst streaming.
+
 ## Jacket
 - [ ] In colder biomes, the jacket closes.
 - [ ] In hotter biomes, the jacket is removed.
