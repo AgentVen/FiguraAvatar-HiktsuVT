@@ -24,6 +24,7 @@
 # Animations
 - [ ] The addition of a proper Crawling animation, instead of reusing the Swim animation. 
 	> Normally, We can't detect if the player is in the "crawling state" like we can with the other states. This is because a "crawling state" doesn't exist, Mojang never added such a state. Instead it uses the "swiming state", as Crawling is just Swiming but with a few changes.
+
 	> With Figura, while we still don't have a "crawling state" to detect, we can create artifical detections of one. Because Figura alows us to get if the player is in the swiming state, and also if the player is in water. So we can just check for if the player is 1. Swiming and 2. Not in water.
 
 
