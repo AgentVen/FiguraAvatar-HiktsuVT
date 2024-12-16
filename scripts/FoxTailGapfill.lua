@@ -9,46 +9,52 @@ local VertexFaceGroups = {}
 
 local function initSetup()
 
-	local workingVertexFaceGroup = {}
+	-- Create a new table in VertexFaceGroups every 4 vertices which stores said 4 vertices' index positions.
+	-- 
+	-- While figura's way of handling organization and identification of vertices is horid, we can at least 
+	--  rely on the fact that:
+	--    1. Figura makes it so that ALL faces have 4 vertices, even ones that don't need 4.
+	--     (no idea if Figura also makes it so that all meshes have 6 faces, need to test)
+	--    2. That they vertices of the face are listed in sequence of one another.
+	-- By this we can pair up all vertices of the same face, and if the same aplies to vertices of the same
+	--  object, well that will just be great.
+	local pos = #VertexFaceGroups + 1
+	VertexFaceGroups[pos] = {}
+
 	for i = 1, #TAIL:getVertices("models.base.tail") do
-		table.insert(workingVertexFaceGroup, TAIL:getVertices("models.base.tail")[i])
+		table.insert(VertexFaceGroups[pos], TAIL:getVertices("models.base.tail")[i])
 
-		if i % 4 == 0 then
-			-- Push (clone contents of) working table to main.
-			local pos = #VertexFaceGroups + 1
+		if i % 4 == 0 and i ~= #VertexFaceGroups then
+			-- Repeat for the next 4 vertices.
+			pos = #VertexFaceGroups + 1
 			VertexFaceGroups[pos] = {}
-			for ii,v in pairs(workingVertexFaceGroup) do
-				VertexFaceGroups[pos][ii] = v
-			end
-
-			-- Clear working table
-			if #workingVertexFaceGroup > 0 then
-				repeat table.remove(workingVertexFaceGroup, 1)
-				until #workingVertexFaceGroup <= 0
-			end
 		end
 	end
 
 	-- This shouldn't ever happen.
-	-- Figura has made it a point that *ALL* faces have 4 Vertexes, even ones that only need 3.
+	-- Figura has made it a point that *ALL* faces have 4 vertices, even ones that only need 3.
 	-- 
 	-- But, on the off chance it does happen, we should get informed about it.
-	if #workingVertexFaceGroup > 0 then
-		error("Uncompleted VertexFaceGroup. (a group of "..#workingVertexFaceGroup.." was found, from "..workingVertexFaceGroup[1].." to "..workingVertexFaceGroup[#workingVertexFaceGroup]..".)", 3)
+	if #VertexFaceGroups[pos] < 4 then
+		error("Uncompleted VertexFaceGroup. (a group of "..#VertexFaceGroups[pos].."vertexes was found, created from "..VertexFaceGroups[pos][1].." to "..VertexFaceGroups[pos][#VertexFaceGroups[pos]]..".)", 3)
 	end
+
+
+	---TODO
+	-- See if this same stuff can be used to organize faces into objects.
 end
 
 events.ENTITY_INIT:register(initSetup)
 
 -- DEBUG for testing and setup of what vertex is what.
 -- Because the people behind Figura desided to just 
---  put all vertexes in one big numbered list.
+--  put all vertices in one big numbered list.
 -- 
 -- Not even with any identifible features! Not even 
 --  something like `<object-name>.<face>.<vertex-number>`.
 -- Just HAD to just throw all of them in one table!?
 -- 
--- The only good thing is that vertexes of the same face 
+-- The only good thing is that vertices of the same face 
 --  are listed sequence of each other, and that those 
 --  vertex groups that are of the same object are listed 
 --  in sequence of each other.
