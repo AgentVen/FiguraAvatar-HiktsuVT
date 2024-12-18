@@ -2,8 +2,8 @@
  	"name": "Hiktsu",
   	"description": "Fanmade FiguraMC Avatar made for HiktsuVT on Twitch.",
 	"authors": ["AgentVenX","Discord@agentven"],
-	"version": "0.1.4",
 	"color": "#D33E32",
+	"version": "0.1.4",
 	"autoScripts": [
 		"scripts.main"
 	]
