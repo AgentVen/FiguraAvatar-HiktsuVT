@@ -62,4 +62,4 @@ events.RENDER:register(function()
 		MASK_FOX.strap_offtotheside:setVisible(true)
 		MASK_FOX.mask_fox:setVisible(true)
 	end
-end)
+end, "KitsuneMask")
