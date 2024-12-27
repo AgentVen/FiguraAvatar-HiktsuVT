@@ -5,6 +5,9 @@
 	"color": "#D33E32",
 	"version": "0.1.4",
 	"autoScripts": [
+		"scripts.utils.lib.table",
+		"scripts.utils.lib.string",
+
 		"scripts.main"
 	]
 }
