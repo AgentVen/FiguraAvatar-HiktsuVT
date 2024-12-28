@@ -14,295 +14,393 @@ local TEXTURE = "textures.tail"
 
 
 local VERTICES = {
-	-- KEY
-	-- #...  tail bone number (0: root - 6: tip)
-	-- .#..  part idenification (g: gapfill part, B: base part(s))
-	-- ..#.  vertex face position number ( 1 -> 2 \/ 3 -> 4)
-	-- ...#  side of part (a: closer to main body, b: farther from main body)
+	--       _UN   _US
+	-- 	    E/W   E/W
+	-- 		+-----+
+	-- 		|     |
+	-- 		|     |
+	-- 		|     |
+	-- 		|     |
+	-- 		|     |
+	-- 		+-----+
+	-- 	    _DN   _DS
+	-- 	    E/W   E/W
+	-- 
+	--       _UE           _UW
+	-- 	    N/S           N/S
+	-- 		+-------------+
+	-- 		|             |
+	-- 		|             |
+	-- 		|             |
+	-- 		|             |
+	-- 		|             |
+	-- 		+-------------+
+	-- 	    _DE           _DW
+	-- 	    N/S           N/S
 
-	["0g1b"] = {
+	["0fUSE"] = {
 		Part = TAIL[0].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["0g2b"] = {
+	["0fESU"] = {
 		Part = TAIL[0].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["0g3b"] = {
+	["0fUSW"] = {
 		Part = TAIL[0].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["0g4b"] = {
+	["0fWSU"] = {
 		Part = TAIL[0].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
+	};
+	["0fDSE"] = {
+		Part = TAIL[0].gapfill,
+		VertexNumber = 0
+	};
+	["0fESD"] = {
+		Part = TAIL[0].gapfill,
+		VertexNumber = 0
+	};
+	["0fDSW"] = {
+		Part = TAIL[0].gapfill,
+		VertexNumber = 0
+	};
+	["0fWSD"] = {
+		Part = TAIL[0].gapfill,
+		VertexNumber = 0
 	};
 
-	["1B1a"] = {
-		Part = TAIL[1].cube,
+	["1gNUE"] = {
+		Part = TAIL[1].Base,
 		VertexNumber = 0
 	};
-	["1B2a"] = {
-		Part = TAIL[1].cube,
+	["1gNUW"] = {
+		Part = TAIL[1].Base,
 		VertexNumber = 0
 	};
-	["1B3a"] = {
-		Part = TAIL[1].cube,
+	["1gNDE"] = {
+		Part = TAIL[1].Base,
 		VertexNumber = 0
 	};
-	["1B4a"] = {
-		Part = TAIL[1].cube,
+	["1gNDW"] = {
+		Part = TAIL[1].Base,
 		VertexNumber = 0
 	};
 
-	["1g1b"] = {
+	["1fUSE"] = {
 		Part = TAIL[1].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["1g2b"] = {
+	["1fESU"] = {
 		Part = TAIL[1].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["1g3b"] = {
+	["1fUSW"] = {
 		Part = TAIL[1].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["1g4b"] = {
+	["1fWSU"] = {
 		Part = TAIL[1].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
+	};
+	["1fDSE"] = {
+		Part = TAIL[1].gapfill,
+		VertexNumber = 0
+	};
+	["1fESD"] = {
+		Part = TAIL[1].gapfill,
+		VertexNumber = 0
+	};
+	["1fDSW"] = {
+		Part = TAIL[1].gapfill,
+		VertexNumber = 0
+	};
+	["1fWSD"] = {
+		Part = TAIL[1].gapfill,
+		VertexNumber = 0
 	};
 
-	["2B1a"] = {
-		Part = TAIL[2].cube,
+	["2gNUE"] = {
+		Part = TAIL[2].Base,
 		VertexNumber = 0
 	};
-	["2B2a"] = {
-		Part = TAIL[2].cube,
+	["2gNUW"] = {
+		Part = TAIL[2].Base,
 		VertexNumber = 0
 	};
-	["2B3a"] = {
-		Part = TAIL[2].cube,
+	["2gNDE"] = {
+		Part = TAIL[2].Base,
 		VertexNumber = 0
 	};
-	["2B4a"] = {
-		Part = TAIL[2].cube,
+	["2gNDW"] = {
+		Part = TAIL[2].Base,
 		VertexNumber = 0
 	};
 
-	["2g1b"] = {
+	["2fUSE"] = {
 		Part = TAIL[2].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["2g2b"] = {
+	["2fESU"] = {
 		Part = TAIL[2].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["2g3b"] = {
+	["2fUSW"] = {
 		Part = TAIL[2].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["2g4b"] = {
+	["2fWSU"] = {
 		Part = TAIL[2].gapfill,
-		VertexNumber = vec(0, 0)
-	};
-
-	["3B1a"] = {
-		Part = TAIL[3].cube,
 		VertexNumber = 0
 	};
-	["3B2a"] = {
-		Part = TAIL[3].cube,
+	["2fDSE"] = {
+		Part = TAIL[2].gapfill,
 		VertexNumber = 0
 	};
-	["3B3a"] = {
-		Part = TAIL[3].cube,
+	["2fESD"] = {
+		Part = TAIL[2].gapfill,
 		VertexNumber = 0
 	};
-	["3B4a"] = {
-		Part = TAIL[3].cube,
+	["2fDSW"] = {
+		Part = TAIL[2].gapfill,
 		VertexNumber = 0
 	};
-	
-	["3B1b"] = {
-		Part = TAIL[3].cube,
-		VertexNumber = 0
-	};
-	["3B2b"] = {
-		Part = TAIL[3].cube,
-		VertexNumber = 0
-	};
-	["3B3b"] = {
-		Part = TAIL[3].cube,
-		VertexNumber = 0
-	};
-	["3B4b"] = {
-		Part = TAIL[3].cube,
+	["2fWSD"] = {
+		Part = TAIL[2].gapfill,
 		VertexNumber = 0
 	};
 
-	["4B1b"] = {
-		Part = TAIL[4].cube,
+	["3gNUE"] = {
+		Part = TAIL[3].Base,
 		VertexNumber = 0
 	};
-	["4B2b"] = {
-		Part = TAIL[4].cube,
+	["3gNUW"] = {
+		Part = TAIL[3].Base,
 		VertexNumber = 0
 	};
-	["4B3b"] = {
-		Part = TAIL[4].cube,
+	["3gNDE"] = {
+		Part = TAIL[3].Base,
 		VertexNumber = 0
 	};
-	["4B4b"] = {
-		Part = TAIL[4].cube,
+	["3gNDW"] = {
+		Part = TAIL[3].Base,
+		VertexNumber = 0
+	};
+	["3gSUE"] = {
+		Part = TAIL[3].Base,
+		VertexNumber = 0
+	};
+	["3gSUW"] = {
+		Part = TAIL[3].Base,
+		VertexNumber = 0
+	};
+	["3gSDE"] = {
+		Part = TAIL[3].Base,
+		VertexNumber = 0
+	};
+	["3gSDW"] = {
+		Part = TAIL[3].Base,
 		VertexNumber = 0
 	};
 
-	["4g1a"] = {
+	["4fUNE"] = {
 		Part = TAIL[4].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["4g2a"] = {
+	["4fENU"] = {
 		Part = TAIL[4].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["4g3a"] = {
+	["4fUNW"] = {
 		Part = TAIL[4].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["4g4a"] = {
+	["4fWNU"] = {
 		Part = TAIL[4].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
+	};
+	["4fDNE"] = {
+		Part = TAIL[4].gapfill,
+		VertexNumber = 0
+	};
+	["4fEND"] = {
+		Part = TAIL[4].gapfill,
+		VertexNumber = 0
+	};
+	["4fDNW"] = {
+		Part = TAIL[4].gapfill,
+		VertexNumber = 0
+	};
+	["4fWND"] = {
+		Part = TAIL[4].gapfill,
+		VertexNumber = 0
 	};
 
-	["5B1b"] = {
-		Part = TAIL[5].cube,
+	["4gSUE"] = {
+		Part = TAIL[4].Base,
 		VertexNumber = 0
 	};
-	["5B2b"] = {
-		Part = TAIL[5].cube,
+	["4gSUW"] = {
+		Part = TAIL[4].Base,
 		VertexNumber = 0
 	};
-	["5B3b"] = {
-		Part = TAIL[5].cube,
+	["4gSDE"] = {
+		Part = TAIL[4].Base,
 		VertexNumber = 0
 	};
-	["5B4b"] = {
-		Part = TAIL[5].cube,
+	["4gSDW"] = {
+		Part = TAIL[4].Base,
 		VertexNumber = 0
 	};
 
-	["5g1a"] = {
+	["5fUNE"] = {
 		Part = TAIL[5].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["5g2a"] = {
+	["5fENU"] = {
 		Part = TAIL[5].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["5g3a"] = {
+	["5fUNW"] = {
 		Part = TAIL[5].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
 	};
-	["5g4a"] = {
+	["5fWNU"] = {
 		Part = TAIL[5].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
+	};
+	["5fDNE"] = {
+		Part = TAIL[5].gapfill,
+		VertexNumber = 0
+	};
+	["5fEND"] = {
+		Part = TAIL[5].gapfill,
+		VertexNumber = 0
+	};
+	["5fDNW"] = {
+		Part = TAIL[5].gapfill,
+		VertexNumber = 0
+	};
+	["5fWND"] = {
+		Part = TAIL[5].gapfill,
+		VertexNumber = 0
 	};
 
-	["6g1a"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = vec(0, 0)
+	["5gSUE"] = {
+		Part = TAIL[5].Base,
+		VertexNumber = 0
 	};
-	["6g2a"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = vec(0, 0)
+	["5gSUW"] = {
+		Part = TAIL[5].Base,
+		VertexNumber = 0
 	};
-	["6g3a"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = vec(0, 0)
+	["5gSDE"] = {
+		Part = TAIL[5].Base,
+		VertexNumber = 0
 	};
-	["6g4a"] = {
+	["5gSDW"] = {
+		Part = TAIL[5].Base,
+		VertexNumber = 0
+	};
+
+	["6fUNE"] = {
 		Part = TAIL[6].gapfill,
-		VertexNumber = vec(0, 0)
+		VertexNumber = 0
+	};
+	["6fENU"] = {
+		Part = TAIL[6].gapfill,
+		VertexNumber = 0
+	};
+	["6fUNW"] = {
+		Part = TAIL[6].gapfill,
+		VertexNumber = 0
+	};
+	["6fWNU"] = {
+		Part = TAIL[6].gapfill,
+		VertexNumber = 0
+	};
+	["6fDNE"] = {
+		Part = TAIL[6].gapfill,
+		VertexNumber = 0
+	};
+	["6fEND"] = {
+		Part = TAIL[6].gapfill,
+		VertexNumber = 0
+	};
+	["6fDNW"] = {
+		Part = TAIL[6].gapfill,
+		VertexNumber = 0
+	};
+	["6fWND"] = {
+		Part = TAIL[6].gapfill,
+		VertexNumber = 0
 	};
 }
 
 local VERTEX_PAIRINGS = {
-	{ [0] = "1B1a", [1] = "0g1b" },
-	{ [0] = "1B2a", [1] = "0g2b" },
-	{ [0] = "1B3a", [1] = "0g3b" },
-	{ [0] = "1B4a", [1] = "0g4b" }
-	;
-	{ [0] = "2B1a", [1] = "1g1b" },
-	{ [0] = "2B2a", [1] = "1g2b" },
-	{ [0] = "2B3a", [1] = "1g3b" },
-	{ [0] = "2B4a", [1] = "1g4b" }
-	;
-	{ [0] = "3B1a", [1] = "2g1b" },
-	{ [0] = "3B2a", [1] = "2g2b" },
-	{ [0] = "3B3a", [1] = "2g3b" },
-	{ [0] = "3B4a", [1] = "2g4b" }
-	;
-	{ [0] = "3B1b", [1] = "4g1a" },
-	{ [0] = "3B2b", [1] = "4g2a" },
-	{ [0] = "3B3b", [1] = "4g3a" },
-	{ [0] = "3B4b", [1] = "4g4a" }
-	;
-	{ [0] = "4B1b", [1] = "5g1a" },
-	{ [0] = "4B2b", [1] = "5g2a" },
-	{ [0] = "4B3b", [1] = "5g3a" },
-	{ [0] = "4B4b", [1] = "5g4a" }
-	;
-	{ [0] = "5B1b", [1] = "6g1a" },
-	{ [0] = "5B2b", [1] = "6g2a" },
-	{ [0] = "5B3b", [1] = "6g3a" },
-	{ [0] = "5B4b", [1] = "6g4a" }
+	-- Vertex #1+ are set to the position of Vertex #0
+	{ [0] = "1gNUE", "0fUSE", "0fESU" },
+	{ [0] = "1gNUW", "0fUSW", "0fWSU" },
+	{ [0] = "1gNDE", "0fDSE", "0fESD" },
+	{ [0] = "1gNDW", "0fDSW", "0fWSD" };
+
+	{ [0] = "2gNUE", "1fUSE", "1fESU" },
+	{ [0] = "2gNUW", "1fUSW", "1fWSU" },
+	{ [0] = "2gNDE", "1fDSE", "1fESD" },
+	{ [0] = "2gNDW", "1fDSW", "1fWSD" };
+
+	{ [0] = "3gNUE", "2fUSE", "2fESU" },
+	{ [0] = "3gNUW", "2fUSW", "2fWSU" },
+	{ [0] = "3gNDE", "2fDSE", "2fESD" },
+	{ [0] = "3gNDW", "2fDSW", "2fWSD" };
+
+	{ [0] = "3gSUE", "4fUNE", "4fENU" },
+	{ [0] = "3gSUW", "4fUNW", "4fWNU" },
+	{ [0] = "3gSDE", "4fDNE", "4fEND" },
+	{ [0] = "3gSDW", "4fDNW", "4fWND" };
+
+	{ [0] = "4gSUE", "5fUNE", "5fENU" },
+	{ [0] = "4gSUW", "5fUNW", "5fWNU" },
+	{ [0] = "4gSDE", "5fDNE", "5fEND" },
+	{ [0] = "4gSDW", "5fDNW", "5fWND" };
+
+	{ [0] = "5gSUE", "6fUNE", "6fENU" },
+	{ [0] = "5gSUW", "6fUNW", "6fWNU" },
+	{ [0] = "5gSDE", "6fDNE", "6fEND" },
+	{ [0] = "5gSDW", "6fDNW", "6fWND" };
 }
 
 
-local function onEntityInitalization()
 
+local function addVerticeOriginVectors()
 	-- Add origin pos, uv, and normal vectors to vertices defined in VERTICES table.
 	for k,v in pairs(VERTICES) do
-		local vertexNumber = v.VertexNumber.x or v.VertexNumber
-
-		v.originPos = v.Part:getVertices(TEXTURE)[vertexNumber]:getPos()
-		v.originUV = v.Part:getVertices(TEXTURE)[vertexNumber]:getUV()
-		v.originNormal = v.Part:getVertices(TEXTURE)[vertexNumber]:getNormal()
-
-		-- If working with a double vertex, make sure the x and y vertexes have matching vectors.
-		-- If not throw the corresponding error
-		if type(v.VertexNumber) == 'Vector2' then
-			if v.Part:getVertices(TEXTURE)[v.VertexNumber.y]:getPos() ~= v.originPos then
-				error("Double Vertex \""..k.."\" does not have matching Pos vectors. (x: "..v.originPos:unpack().."  y: "..v.Part:getVertices(TEXTURE)[v.VertexNumber.y]:getPos():unpack()..".)", 6)
-			end
-			if v.Part:getVertices(TEXTURE)[v.VertexNumber.y]:getUV() ~= v.originUV then
-				error("Double Vertex \""..k.."\" does not have matching UV vectors. (x: "..v.originUV:unpack()..", y: "..v.Part:getVertices(TEXTURE)[v.VertexNumber.y]:getUV():unpack()..".)", 6)
-			end
-			if v.Part:getVertices(TEXTURE)[v.VertexNumber.y]:getNormal() ~= v.originNormal then
-				error("Double Vertex \""..k.."\" does not have matching Normal vectors. (x: "..v.originNormal:unpack()..", y: "..v.Part:getVertices(TEXTURE)[v.VertexNumber.y]:getNormal():unpack()..".)", 6)
-			end
-		end
+		v.originPos = v.Part:getVertices(TEXTURE)[v.VertexNumber]:getPos()
+		v.originUV = v.Part:getVertices(TEXTURE)[v.VertexNumber]:getUV()
+		v.originNormal = v.Part:getVertices(TEXTURE)[v.VertexNumber]:getNormal()
 	end
-
 end
 
-events.ENTITY_INIT:register(onEntityInitalization, "FoxTailHandler_onEntityInitalization")
+events.ENTITY_INIT:register(addVerticeOriginVectors, "FoxTailHandler")
 
 
 local function applyVertexPairing(vertex_pairing)
 	local vertex0 = VERTICES[vertex_pairing[0]]
-	if type(vertex0.VertexNumber) == 'Vector2' then error("Vertex 0 in a Vertex Pairing cannot have a double vertex number.", 6) end
 
+	-- Last time I tried this, I set the gapfill vertices position to the raw Base part vertices,
+	--  and that didn't work.
+	-- So instead, lets try setting the gapfill vertex position to its Origin Position + the Delta between
+	--  Base vertex's Origin Position and Current Position.
+	-- 
+	-- Yeah it's the same thing, but I assuming there's some scuff at play. 
+	--  May it be Figura, Minecraft, and/or Java scuff.
 	local pos0Delta = vertex0.originPos - vertex0.Part:getVertices(TEXTURE)[vertex0.VertexNumber]:getPos()
 	for i = 1, #vertex_pairing do
 		local vertexi = VERTICES[vertex_pairing[i]]
 
-		local newPosi = vertexi.Part:getVertices(TEXTURE)[vertexi.VertexNumber.x or vertexi.VertexNumber]:getPos() + pos0Delta
-		if type(vertexi.VertexNumber) == 'Vector2' then
-			vertexi.Part:getVertices(TEXTURE)[vertexi.VertexNumber.x]:setPos(newPosi)
-			vertexi.Part:getVertices(TEXTURE)[vertexi.VertexNumber.y]:setPos(newPosi)
-		else
-			vertexi.Part:getVertices(TEXTURE)[vertexi.VertexNumber]:setPos(newPosi)
-		end
+		local newPosi = vertexi.originPos + pos0Delta
+		vertexi.Part:getVertices(TEXTURE)[vertexi.VertexNumber]:setPos(newPosi)
 	end
 end
 
