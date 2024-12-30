@@ -33,34 +33,49 @@ local TEXTURE = "textures.tail"
 
 
 local VERTICES = {
-	["EUN"] = 5,	["WUN"] = 11,	["UNE"] = 3,	["DNE"] = 14,
-	["EUS"] = 6,	["WUS"] = 10,	["UNW"] = 4,	["DNW"] = 13,
-	["EDN"] = 8,	["WDN"] = 12,	["USE"] = 2,	["DSE"] = 15,
-	["EDS"] = 7;	["WDS"] = 9;	["USW"] = 1;	["DSW"] = 16;
+	["ENU"] = 5,	["WNU"] = 11,	["UNE"] = 3,	["DNE"] = 14,
+	["END"] = 8,	["WND"] = 12,	["UNW"] = 4,	["DNW"] = 13,
+	["ESU"] = 6,	["WSU"] = 10,	["USE"] = 2,	["DSE"] = 15,
+	["ESD"] = 7;	["WSD"] = 9;	["USW"] = 1;	["DSW"] = 16;
 }
 
 
-
+local flip = {
+	UpDown = { ["U"] = "D", ["D"] = "U" };
+	NorthSouth = { ["N"] = "S", ["S"] = "N" };
+	EastWest = { ["E"] = "W", ["W"] = "E" };
+};
 events.RENDER:register(function (delta, context, matrix)
+	
 	do -- Example math code
-		local Theta = TAIL[1]:getRot():toRad()
+		local _tailbone_ = 0
+		local _vertexkey_ = "USE"
 
-		local rX = TAIL[0]:getVertices(TEXTURE)[VERTICES["UNW"]]:getPos().x
-		local rx = TAIL[0]:getVertices(TEXTURE)[VERTICES["UNE"]]:getPos().x
-		local rY = TAIL[0]:getVertices(TEXTURE)[VERTICES["EUN"]]:getPos().y
-		local ry = TAIL[0]:getVertices(TEXTURE)[VERTICES["EDN"]]:getPos().y
+
+		local Theta = TAIL[_tailbone_ + 1]:getRot():toRad() --NOTE: `getRot` should be replaced with `getAnimRot`
+
+		local rX = TAIL[_tailbone_]:getVertices(TEXTURE)[VERTICES[_vertexkey_:gsub(".", flip.NorthSouth)]]:getPos().x
+		local rx = TAIL[_tailbone_]:getVertices(TEXTURE)[VERTICES[_vertexkey_:gsub(".", flip.NorthSouth):gsub(".", flip.EastWest)]]:getPos().x
+		local rY = TAIL[_tailbone_]:getVertices(TEXTURE)[VERTICES[_vertexkey_:reverse()]]:getPos().y
+		local ry = TAIL[_tailbone_]:getVertices(TEXTURE)[VERTICES[_vertexkey_:reverse():gsub(".", flip.UpDown)]]:getPos().y
 		local r = vec((rX - rx) / 2, (rY - ry) / 2)
 
-		TAIL:getVertices(TEXTURE)[VERTICES["USW"]]:setPos(
-			math.cos(Theta.x) * r.x,
-			math.sin(Theta.y) * r.y,
-			math.sin(Theta.x) * r.x
+		TAIL[_tailbone_]:getVertices(TEXTURE)[VERTICES[_vertexkey_]]:setPos(
+			math.cos(math.abs(Theta.x)) * r.x,
+			math.sin(math.abs(Theta.y)) * r.y,
+			math.clamp(
+				math.sin(math.abs(Theta.x)) * r.x, 
+				-- Prevent Dynamic vertex from going beyond the Static vertex
+				((_vertexkey_:sub(2,2) == "S") and TAIL[_tailbone_]:getVertices(TEXTURE)[VERTICES[_vertexkey_:gsub(".", flip.NorthSouth)]]:getPos().z) or -math.huge,
+				((_vertexkey_:sub(2,2) == "N") and TAIL[_tailbone_]:getVertices(TEXTURE)[VERTICES[_vertexkey_:gsub(".", flip.NorthSouth)]]:getPos().z) or math.huge
+			)
 		)
+
+
+		-- Whats going on here:
+		-- 
+		-- 
 	end
-
-
-
-
 
 end, "FoxTailHandler-RENDER")
 
