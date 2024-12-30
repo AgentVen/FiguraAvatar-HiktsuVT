@@ -3,7 +3,10 @@
 - Releases are listed here starting from the top newest down to the to oldest.
 
 
+# Changes
+
 ### Dev. Update 29/12/2024 #1
+- Added a "Changes" Header to `CHANGELOG.md`.
 - Due to potentially needing to have to *very* closely handle the Tail's gapfilling and animations, the `scripts/FoxTailGapfill.lua` script was renamed to `scripts/FoxTailHandler.lua`. *(this might actually be subject to being reverted.)*
 - I believe I've figured out how to get the gapfilling functionality to actually work! *(after literal weeks, heck months!)* An implementation is in the works!
 - The belt has been Modelled given a *Basic* texture, *Proper* texturing still needs to be done.
