@@ -13,329 +13,30 @@ local TAIL = {
 local TEXTURE = "textures.tail"
 
 
+-- Ok, so I figured out why it wasn't working. 
+-- 
+-- It's because the positions of vertices on a Mesh are *realitive* to 
+--  their own *unique* 0,0,0 point, which is initally set to the 
+--  "Model Space"'s 0,0,0 point. 
+-- I say "initally set" because once at runtime the point's position in 
+--  the "Model Space" *becomes* realitive to the Mesh, meaning changes 
+--  to the Mesh's position and/or rotation would not change the 
+--  positions of the vertices.
+-- 
+-- Now, I'm not calling to change this. In fact I understand why its done this way.
+-- However, some documentation on this quirk would've been nice. (Then again no
+--  iteration of the documentation on Vertices is anymore than a stub..)
+-- 
+-- 
+-- But now, I know what I need to do get this finally working!
+-- And it's the ton of math I was originally trying to advoid.
+
+
 local VERTICES = {
-	--       _UN   _US
-	-- 	    E/W   E/W
-	-- 		+-----+
-	-- 		|     |
-	-- 		|     |
-	-- 		|     |
-	-- 		|     |
-	-- 		|     |
-	-- 		+-----+
-	-- 	    _DN   _DS
-	-- 	    E/W   E/W
-	-- 
-	--       _UE           _UW
-	-- 	    N/S           N/S
-	-- 		+-------------+
-	-- 		|             |
-	-- 		|             |
-	-- 		|             |
-	-- 		|             |
-	-- 		|             |
-	-- 		+-------------+
-	-- 	    _DE           _DW
-	-- 	    N/S           N/S
-
-	["0fUSE"] = {
-		Part = TAIL[0].gapfill,
-		VertexNumber = 0
-	};
-	["0fESU"] = {
-		Part = TAIL[0].gapfill,
-		VertexNumber = 0
-	};
-	["0fUSW"] = {
-		Part = TAIL[0].gapfill,
-		VertexNumber = 0
-	};
-	["0fWSU"] = {
-		Part = TAIL[0].gapfill,
-		VertexNumber = 0
-	};
-	["0fDSE"] = {
-		Part = TAIL[0].gapfill,
-		VertexNumber = 0
-	};
-	["0fESD"] = {
-		Part = TAIL[0].gapfill,
-		VertexNumber = 0
-	};
-	["0fDSW"] = {
-		Part = TAIL[0].gapfill,
-		VertexNumber = 0
-	};
-	["0fWSD"] = {
-		Part = TAIL[0].gapfill,
-		VertexNumber = 0
-	};
-
-	["1gNUE"] = {
-		Part = TAIL[1].Base,
-		VertexNumber = 0
-	};
-	["1gNUW"] = {
-		Part = TAIL[1].Base,
-		VertexNumber = 0
-	};
-	["1gNDE"] = {
-		Part = TAIL[1].Base,
-		VertexNumber = 0
-	};
-	["1gNDW"] = {
-		Part = TAIL[1].Base,
-		VertexNumber = 0
-	};
-
-	["1fUSE"] = {
-		Part = TAIL[1].gapfill,
-		VertexNumber = 0
-	};
-	["1fESU"] = {
-		Part = TAIL[1].gapfill,
-		VertexNumber = 0
-	};
-	["1fUSW"] = {
-		Part = TAIL[1].gapfill,
-		VertexNumber = 0
-	};
-	["1fWSU"] = {
-		Part = TAIL[1].gapfill,
-		VertexNumber = 0
-	};
-	["1fDSE"] = {
-		Part = TAIL[1].gapfill,
-		VertexNumber = 0
-	};
-	["1fESD"] = {
-		Part = TAIL[1].gapfill,
-		VertexNumber = 0
-	};
-	["1fDSW"] = {
-		Part = TAIL[1].gapfill,
-		VertexNumber = 0
-	};
-	["1fWSD"] = {
-		Part = TAIL[1].gapfill,
-		VertexNumber = 0
-	};
-
-	["2gNUE"] = {
-		Part = TAIL[2].Base,
-		VertexNumber = 0
-	};
-	["2gNUW"] = {
-		Part = TAIL[2].Base,
-		VertexNumber = 0
-	};
-	["2gNDE"] = {
-		Part = TAIL[2].Base,
-		VertexNumber = 0
-	};
-	["2gNDW"] = {
-		Part = TAIL[2].Base,
-		VertexNumber = 0
-	};
-
-	["2fUSE"] = {
-		Part = TAIL[2].gapfill,
-		VertexNumber = 0
-	};
-	["2fESU"] = {
-		Part = TAIL[2].gapfill,
-		VertexNumber = 0
-	};
-	["2fUSW"] = {
-		Part = TAIL[2].gapfill,
-		VertexNumber = 0
-	};
-	["2fWSU"] = {
-		Part = TAIL[2].gapfill,
-		VertexNumber = 0
-	};
-	["2fDSE"] = {
-		Part = TAIL[2].gapfill,
-		VertexNumber = 0
-	};
-	["2fESD"] = {
-		Part = TAIL[2].gapfill,
-		VertexNumber = 0
-	};
-	["2fDSW"] = {
-		Part = TAIL[2].gapfill,
-		VertexNumber = 0
-	};
-	["2fWSD"] = {
-		Part = TAIL[2].gapfill,
-		VertexNumber = 0
-	};
-
-	["3gNUE"] = {
-		Part = TAIL[3].Base,
-		VertexNumber = 0
-	};
-	["3gNUW"] = {
-		Part = TAIL[3].Base,
-		VertexNumber = 0
-	};
-	["3gNDE"] = {
-		Part = TAIL[3].Base,
-		VertexNumber = 0
-	};
-	["3gNDW"] = {
-		Part = TAIL[3].Base,
-		VertexNumber = 0
-	};
-	["3gSUE"] = {
-		Part = TAIL[3].Base,
-		VertexNumber = 0
-	};
-	["3gSUW"] = {
-		Part = TAIL[3].Base,
-		VertexNumber = 0
-	};
-	["3gSDE"] = {
-		Part = TAIL[3].Base,
-		VertexNumber = 0
-	};
-	["3gSDW"] = {
-		Part = TAIL[3].Base,
-		VertexNumber = 0
-	};
-
-	["4fUNE"] = {
-		Part = TAIL[4].gapfill,
-		VertexNumber = 0
-	};
-	["4fENU"] = {
-		Part = TAIL[4].gapfill,
-		VertexNumber = 0
-	};
-	["4fUNW"] = {
-		Part = TAIL[4].gapfill,
-		VertexNumber = 0
-	};
-	["4fWNU"] = {
-		Part = TAIL[4].gapfill,
-		VertexNumber = 0
-	};
-	["4fDNE"] = {
-		Part = TAIL[4].gapfill,
-		VertexNumber = 0
-	};
-	["4fEND"] = {
-		Part = TAIL[4].gapfill,
-		VertexNumber = 0
-	};
-	["4fDNW"] = {
-		Part = TAIL[4].gapfill,
-		VertexNumber = 0
-	};
-	["4fWND"] = {
-		Part = TAIL[4].gapfill,
-		VertexNumber = 0
-	};
-
-	["4gSUE"] = {
-		Part = TAIL[4].Base,
-		VertexNumber = 0
-	};
-	["4gSUW"] = {
-		Part = TAIL[4].Base,
-		VertexNumber = 0
-	};
-	["4gSDE"] = {
-		Part = TAIL[4].Base,
-		VertexNumber = 0
-	};
-	["4gSDW"] = {
-		Part = TAIL[4].Base,
-		VertexNumber = 0
-	};
-
-	["5fUNE"] = {
-		Part = TAIL[5].gapfill,
-		VertexNumber = 0
-	};
-	["5fENU"] = {
-		Part = TAIL[5].gapfill,
-		VertexNumber = 0
-	};
-	["5fUNW"] = {
-		Part = TAIL[5].gapfill,
-		VertexNumber = 0
-	};
-	["5fWNU"] = {
-		Part = TAIL[5].gapfill,
-		VertexNumber = 0
-	};
-	["5fDNE"] = {
-		Part = TAIL[5].gapfill,
-		VertexNumber = 0
-	};
-	["5fEND"] = {
-		Part = TAIL[5].gapfill,
-		VertexNumber = 0
-	};
-	["5fDNW"] = {
-		Part = TAIL[5].gapfill,
-		VertexNumber = 0
-	};
-	["5fWND"] = {
-		Part = TAIL[5].gapfill,
-		VertexNumber = 0
-	};
-
-	["5gSUE"] = {
-		Part = TAIL[5].Base,
-		VertexNumber = 0
-	};
-	["5gSUW"] = {
-		Part = TAIL[5].Base,
-		VertexNumber = 0
-	};
-	["5gSDE"] = {
-		Part = TAIL[5].Base,
-		VertexNumber = 0
-	};
-	["5gSDW"] = {
-		Part = TAIL[5].Base,
-		VertexNumber = 0
-	};
-
-	["6fUNE"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = 0
-	};
-	["6fENU"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = 0
-	};
-	["6fUNW"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = 0
-	};
-	["6fWNU"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = 0
-	};
-	["6fDNE"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = 0
-	};
-	["6fEND"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = 0
-	};
-	["6fDNW"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = 0
-	};
-	["6fWND"] = {
-		Part = TAIL[6].gapfill,
-		VertexNumber = 0
-	};
+	["EUN"] = 5,	["WUN"] = 11,	["UNE"] = 3,	["DNE"] = 14,
+	["EUS"] = 6,	["WUS"] = 10,	["UNW"] = 4,	["DNW"] = 13,
+	["EDN"] = 8,	["WDN"] = 12,	["USE"] = 2,	["DSE"] = 15,
+	["EDS"] = 7;	["WDS"] = 9;	["USW"] = 1;	["DSW"] = 16;
 }
 
 local VERTEX_PAIRINGS = {
@@ -373,6 +74,7 @@ local VERTEX_PAIRINGS = {
 
 
 
+
 local function addVerticeOriginVectors()
 	-- Add origin pos, uv, and normal vectors to vertices defined in VERTICES table.
 	for k,v in pairs(VERTICES) do
@@ -382,30 +84,112 @@ local function addVerticeOriginVectors()
 	end
 end
 
-events.ENTITY_INIT:register(addVerticeOriginVectors, "FoxTailHandler")
+
+events.ENTITY_INIT:register(function()
+	addVerticeOriginVectors()
+end, "FoxTailHandler")
 
 
 local function applyVertexPairing(vertex_pairing)
-	local vertex0 = VERTICES[vertex_pairing[0]]
-
-	-- Last time I tried this, I set the gapfill vertices position to the raw Base part vertices,
-	--  and that didn't work.
-	-- So instead, lets try setting the gapfill vertex position to its Origin Position + the Delta between
-	--  Base vertex's Origin Position and Current Position.
-	-- 
-	-- Yeah it's the same thing, but I assuming there's some scuff at play. 
-	--  May it be Figura, Minecraft, and/or Java scuff.
-	local pos0Delta = vertex0.originPos - vertex0.Part:getVertices(TEXTURE)[vertex0.VertexNumber]:getPos()
-	for i = 1, #vertex_pairing do
-		local vertexi = VERTICES[vertex_pairing[i]]
-
-		local newPosi = vertexi.originPos + pos0Delta
-		vertexi.Part:getVertices(TEXTURE)[vertexi.VertexNumber]:setPos(newPosi)
-	end
+	
 end
 
+
 events.RENDER:register(function (delta, context, matrix)
-	for i = 1, #VERTEX_PAIRINGS do
-		applyVertexPairing(VERTEX_PAIRINGS[i])
+
+	for i = 0, #TAIL, 1 do
+		local Theta = TAIL[i]:getRot():toRad()
+		local r = vec(
+			(VERTICES[i.."UNW"].originPos.x - VERTICES[i.."UNE"].originPos.x) / 2, 
+			(VERTICES[i.."ENU"].originPos.y - VERTICES[i.."END"].originPos.y) / 2
+		)
+
+		VERTICES[i.."USW"].Part:getVertices(TEXTURE)[VERTICES[i.."USW"].VertexNumber]:setPos(
+			math.cos(Theta.x) * r.x,
+			math.sin(Theta.y) * r.y,
+			math.sin(Theta.x) * r.x
+		)
 	end
+
 end, "FoxTailHandler")
+
+
+
+
+--DEBUG
+local PART = TAIL[5].gapfill
+
+local FaceGroups = { {} }
+
+local face,index = 1,0
+local OFFSET = vec(1, 1, 1)
+
+local save = {}
+
+events.KEY_PRESS:register(function(key, state, modifiers)
+	if key == 302 and state == 1 then
+		
+		for i = 1, #PART:getVertices(TEXTURE) do
+			table.insert(FaceGroups[face], i)
+
+			if i % 4 == 0 and i ~= #PART:getVertices(TEXTURE) then
+				face = face + 1
+				FaceGroups[face] = {}
+			end
+		end
+		face = 0
+
+		print(#FaceGroups.." / "..#PART:getVertices(TEXTURE))
+
+	elseif key == 303 and state == 1 then
+
+		if face ~= 0 then
+			if save[0] then
+				save[0] = nil
+			end
+
+			for i = 1, #FaceGroups[face], 1 do
+				PART:getVertices(TEXTURE)[FaceGroups[face][i]]:setPos(save[i])
+			end
+		end
+
+		face = face + 1
+		if face > #FaceGroups then
+			face = 1
+		end
+		index = FaceGroups[face][1] - 1
+
+		print("#"..face)
+
+		for i = 1, #FaceGroups[face], 1 do
+			save[i] = PART:getVertices(TEXTURE)[FaceGroups[face][i]]:getPos()
+			PART:getVertices(TEXTURE)[FaceGroups[face][i]]:setPos(save[i] + OFFSET)
+
+			print(FaceGroups[face][i])
+		end
+
+	elseif key == 304 and state == 1 then
+
+		if index ~= 0 and save[0] ~= nil then
+			PART:getVertices(TEXTURE)[index]:setPos(save[0])
+		end
+
+		index = index + 1
+		if index > #PART:getVertices(TEXTURE) then
+			index = 1
+		end
+
+		save[0] = PART:getVertices(TEXTURE)[index]:getPos()
+		PART:getVertices(TEXTURE)[index]:setPos(save[0] + OFFSET)
+
+		print(index)
+
+	elseif key == 305 and state == 1 then
+		
+		--printTable(TAIL[1].Base:getVertices(TEXTURE)[15], 2)
+		print(TAIL[1].Base:getVertices(TEXTURE)[15]:getPos())
+		print(TAIL[1].Base:getVertices(TEXTURE)[15]:getUV())
+		print(TAIL[1].Base:getVertices(TEXTURE)[15]:getNormal())
+
+	end
+end, "FoxTailHandler-DEBUG")
