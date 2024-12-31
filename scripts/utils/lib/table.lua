@@ -80,7 +80,7 @@ function table.clone(t, depth)
 		)
 
 		assert(type(depth) == 'number' or type(depth) == 'nil',
-		"(table.clone #2) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '"..type(deptht).."'."
+		"(table.clone #2) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '"..type(depth).."'."
 		)
 		depth = depth or 0
 
