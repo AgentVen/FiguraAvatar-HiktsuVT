@@ -9,6 +9,7 @@
 ---@param mode number? # The mode which should be used when using the needle. (Default: 0)
 ---| '0: plain' # Needle isn't used in any special way.
 ---| '1: string pattern' # If the needle is a string, it will be used as a string pattern.
+---| '2: condition function' # If the needle is a function, it will call the function with the parameters `i` (index) & `v` (value), and will return on the first occurrence of the given function returning a positive value.
 ---@return number|nil # Returns the index position in the table if found, or nil if not.
 ---
 --- @*port* `Luau` `modified` — Added `len` & `plain` param.
@@ -43,12 +44,19 @@ function table.find(haystack, needle, init, len, mode)
 
 	for i = init, len, 1 do
 		if haystack[i] then
+			-- Normal
 			if (mode == 0) then
 				if string.find(haystack[i], needle) then
 					return i
 				end
+			-- String pattern
 			elseif (mode == 1) and type(needle) == 'string' then
 				if haystack[i] == needle then
+					return i
+				end
+			-- Condition function
+			elseif (mode == 2) and (type(needle) == 'function' or type (needle) == 'thread') then
+				if needle(i, haystack[i]) then
 					return i
 				end
 			end
