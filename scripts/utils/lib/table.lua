@@ -6,33 +6,48 @@
 ---@param needle any # Value that you're trying to find.
 ---@param init number? # The index to start searching from. (Default: 1)
 ---@param len number? # The length of the table to search through. (Default: -1)
----@param plain boolean? # If the needle is a string, whether or not to treat it as a pattern. (Default: true)
+---@param mode number? # The mode which should be used when using the needle. (Default: 0)
+---| '0: plain' # Needle isn't used in any special way.
+---| '1: string pattern' # If the needle is a string, it will be used as a string pattern.
 ---@return number|nil # Returns the index position in the table if found, or nil if not.
 ---
 --- @*port* `Luau` `modified` — Added `len` & `plain` param.
-function table.find(haystack, needle, init, len, plain)
-	do-- Parameter type checking & correction
+function table.find(haystack, needle, init, len, mode)
+	do -- Parameter type checking & correction
+		
 		assert(type(haystack) == 'table', 
-		"bad argument #1 (table expected, got "..type(haystack)..".)"
+		"(table.find #1) Invalid type!\n\tExpected type: 'table'. Got: '"..type(haystack).."'."
 		)
+
 		assert(type(init) == 'number' or type(init) == 'nil', 
-		"bad argument #3 (number, or nil expected, got "..type(init)..".)"
-		); init = init or 1; if init < 0 then init = #haystack + 1 + init end
+		"(table.find #2) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '"..type(init).."'."
+		)
+		init = init or 1
+		if init < 0 then init = #haystack + 1 + init end
+
 		assert(type(len) == 'number' or type(len) == 'nil', 
-		"bad argument #4 (number, or nil expected, got "..type(len)..".)"
-		); len = len or -1; if len < 0 then len = #haystack + 1 + len end
-		assert(type(plain) == 'boolean' or type(plain) == 'nil', 
-		"bad argument #5 (boolean, or nil expected, got "..type(plain)..".)"
-		); if plain == nil then plain = true end
+		"(table.find #3) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '"..type(len).."'."
+		)
+		len = len or -1
+		if len < 0 then len = #haystack + 1 + len end
+
+		assert(type(mode) == 'number' or type(mode) == 'nil', 
+		"(table.find #4) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '"..type(mode).."'."
+		)
+		mode = mode or 0
+		assert(mode >= 0 and mode <= 2,
+		"(table.find #4) Out of range!\n\tExpected a number: from 0, to 2. Got: "..type(mode).."."
+		)
+
 	end
 
 	for i = init, len, 1 do
 		if haystack[i] then
-			if plain == false and type(needle) == 'string' then
+			if (mode == 0) then
 				if string.find(haystack[i], needle) then
 					return i
 				end
-			else
+			elseif (mode == 1) and type(needle) == 'string' then
 				if haystack[i] == needle then
 					return i
 				end
@@ -50,13 +65,17 @@ end
 ---
 --- @*port* `Luau` `modified` — Added `depth` param.
 function table.clone(t, depth)
-	do-- Parameter type checking & correction
+	do -- Parameter type checking & correction
+	
 		assert(type(t) == 'table',
-		"bad argument #1 (table expected, got "..type(t)..".)"
+		"(table.clone #1) Invalid type!\n\tExpected type: 'table'. Got: '"..type(t).."'."
 		)
+
 		assert(type(depth) == 'number' or type(depth) == 'nil',
-		"bad argument #2 (number, or nil expected, got "..type(depth)..".)"
-		); depth = depth or 0
+		"(table.clone #2) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '"..type(deptht).."'."
+		)
+		depth = depth or 0
+
 	end
 
 	local _return = {}
