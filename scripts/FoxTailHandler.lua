@@ -44,90 +44,87 @@ local VERTICES = {
 }
 
 
-events.ENTITY_INIT:register(function()
-
-	---
-
-end, "FoxTailHandler.lua-ENTITY_INIT")
-
-
 local flip = {
 	UpDown = { ["U"] = "D", ["D"] = "U" };
 	NorthSouth = { ["N"] = "S", ["S"] = "N" };
 	EastWest = { ["E"] = "W", ["W"] = "E" };
 };
 
+
+
+local enableDEBUG = false
+
+
 events.RENDER:register(function (delta, context, matrix)
 	
+	do -- TEMP DEBUG
+		TAIL[0].Base:setOpacity(0.5)
+		TAIL[1].Base:setOpacity(0.5)
+		TAIL[2].Base:setOpacity(0.5)
+		TAIL[3].Base:setOpacity(0.5)
+		TAIL[4].Base:setOpacity(0.5)
+		TAIL[5].Base:setOpacity(0.5)
+		TAIL[6].Base:setOpacity(0.5)
+	end
+
 	-- Whats going on here:
-		-- 
-		-- 
-		--                       `.                       
-		--                         `.                     
-		--                           `.                   
-		--     TAIL BONE B             `.                 
-		--                   _.---------.`.               
-		--                .-º            "º-. (x,z)       
-		--              ,'                   B,           
-		--             /                   _/| \          
-		--           ,'                 r_/  |  `,        
-		-- .         |                 _/.   |z  |        
-		--  `.      |'               _/ θ \  |   `|       
-		--    `.    |..............<______/__|____A (x,z) 
-		--      `.  |,          .'     x/y       ,|       
-		--        `.:|        .'                 |:       
-		--          ::,     .'                  ,':       
-		--          : `\  .'                   /  :       
-		--          :   `.                   ,'   :       
-		--          :     `-._           _.-'     :       
-		--          :         °---------°         :       
-		--          :                             :       
-		--          :         TAIL BONE A         :       
-		-- 
+	-- 
+	-- 
+	--                        `.                       
+	--                          `.                     
+	--                            `.                   
+	--        TAIL[B]               `.                 
+	--                   _.----------.`.               
+	--                .-º             "º-. (x,z)       
+	--              ,'                   _B,           
+	--             /                   _/ | \          
+	--           ,'                 r_/   |  `,        
+	-- .         |                 _/.    |z  |        
+	--  `.      |'               _/ θ \   |   `|       
+	--    `.    |...............<_____/___|____A (x,z) 
+	--      `.  |,          .'       x        ,|       
+	--        `.:|        .'                  |:       
+	--          ::,     .'                   ,':       
+	--          : `\  .'                    /  :       
+	--          :   `.                    ,'   :       
+	--          :     `-._            _.-'     :       
+	--          :         °----------°         :       
+	--          :                              :       
+	--          :            TAIL[A]           :       
+	-- 
+	--
+	-- Since we can't correct the vertex position by getting the position of a vertex on a different Mesh,
+	--  we need to use math to get the position.
+	-- 
+	-- Specifically, what we need is to get a point on a circumference from an angle.
+	-- This can be done with Simple Trigonometry and a mathematically-existing circle.
+	-- 
+	-- 
+	-- For rotation on the x-axis (Side-to-Side):
+	-- 
+	--       x = cos(θ.x) * r.x     z = sin(θ.x) * r.x
+	-- 
+	-- For rotation on the y-axis (Up-and-Down):
+	-- 
+	--       y = cos(θ.y) * r.y     z = sin(θ.y) * r.y
+	-- 
+	-- `θ` is the rotation of TAIL[B]. 
+	--  `θ.x` is the rotation of TAIL[B] on the `x` axis. 
+	--  `θ.y` is the rotation of TAIL[B] on the `y` axis.
+	-- `r` is the radius of the mathematically-existing circle. 
+	--  `r.x` is the radius calulated on the `x` axis. 
+	--  `r.y` is the radius calulated on the `y` axis.
+	-- 
+	-- 
+	-- However, remember that the vertices are realitive to a hidden 0,0,0 point. Which initally is the 
+	--  same as the "Model Space"'s 0,0,0 point, it then becomes realitive to the Part at runtime.
+	-- Likely-hood is
+	-- 
+	-- This is done by
 
-	--[=[
-	do -- Example math code
 
-		local Theta = TAIL[1]:getRot():toRad() --NOTE: `getRot` should be replaced with `getAnimRot`
-
-		local rX = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["UNE"]]:getPos().x
-		local rx = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["UNW"]]:getPos().x
-		local rY = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["ENU"]]:getPos().y
-		local ry = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["END"]]:getPos().y
-		local r = vec((rX - rx) / 2, (rY - ry) / 2)
-		
-		local originPos = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["UNE"]]:getPos()
-		
-		TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["USE"]]:setPos(
-			math.cos(Theta.x) * r.x,
-			originPos.y + (((Theta.y ~= 0 ) and math.cos(Theta.y)) or Theta.y) * r.y,
-			originPos.z + math.abs(math.sin(Theta.x) * r.x)
-		)
-
-	end
-
-	do -- Example math code
-
-		local Theta = TAIL[1]:getRot():toRad() --NOTE: `getRot` should be replaced with `getAnimRot`
-
-		local rX = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["UNW"]]:getPos().x
-		local rx = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["UNE"]]:getPos().x
-		local rY = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["WNU"]]:getPos().y
-		local ry = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["WND"]]:getPos().y
-		local r = vec((rX - rx) / 2, (rY - ry) / 2)
-		
-		local originPos = TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["UNW"]]:getPos()
-		
-		TAIL[0].gapfill:getVertices(TEXTURE)[VERTICES["USW"]]:setPos(
-			math.cos(Theta.x) * r.x,
-			originPos.y + (((Theta.y ~= 0 ) and math.cos(Theta.y)) or Theta.y) * r.y,
-			originPos.z + math.abs(math.sin(Theta.x) * r.x)
-		)
-
-	end
-	--]=]
-
-	for bone = 0, #TAIL, 1 do
+	-- [==[
+	for bone = 0, #TAIL - 4, 1 do
 		if bone < 3 then
 			for vertexKey, vertexIndex in pairs(VERTICES.SOUTHSIDE) do
 				local Theta = TAIL[bone + 1]:getRot():toRad() --NOTE: `getRot` should be replaced with `getAnimRot`
@@ -136,17 +133,58 @@ events.RENDER:register(function (delta, context, matrix)
 				local rx = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey:gsub(".", flip.EastWest)]]:getPos().x
 				local rY = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey:reverse()]]:getPos().y
 				local ry = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey:reverse():gsub(".", flip.UpDown)]]:getPos().y
-				local r = vec((rX - rx) / 2, (rY - ry) / 2)
-				
-				local originPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey]]:getPos()
-				
-				TAIL[bone].gapfill:getVertices(TEXTURE)[vertexIndex]:setPos(
-					math.cos(Theta.x) * r.x,
-					originPos.y + (((Theta.y ~= 0 ) and math.cos(Theta.y)) or Theta.y) * r.y,
-					originPos.z + math.abs(math.sin(Theta.x) * r.x)
+				local r = vec(rX - rx, rY - ry):div(2, 2)
+
+				local originPos = vec(
+					(math.max(rX, rx) - math.abs(r.x)),
+					(math.max(rY, ry) - math.abs(r.y)),
+					TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey]]:getPos().z
 				)
+
+
+				local newPos = vec(
+					originPos.x + (math.sign(Theta.x) * math.cos(Theta.x)) * r.x,
+					originPos.y + (math.sign(Theta.y) * math.cos(Theta.y)) * r.y,
+					originPos.z + (
+						math.abs((math.sign(Theta.x) * math.sin(Theta.x)) * r.x)
+					  +	math.abs((math.sign(Theta.y) * math.sin(Theta.y)) * r.y)
+					)
+				)
+
+				if newPos.z <= originPos.z then
+					newPos = originPos
+				end
+
+				TAIL[bone].gapfill:getVertices(TEXTURE)[vertexIndex]:setPos(newPos)
+
+
+				if enableDEBUG then
+					do
+						local sysTime = client:getSystemTime()
+						local seconds = math.floor(sysTime / 1000)
+						local milliseconds = sysTime % 1000
+						local minutes = math.floor(seconds / 60)
+						seconds = seconds % 60
+						local hours = math.floor(minutes / 60)
+						minutes = minutes % 60
+
+						print(string.format("\n< @%02d:%02d:%02d.%03d >", hours, minutes, seconds, milliseconds))
+					end
+
+
+					print("\"bone\" :",bone, "\"vertexKey\" :",vertexKey, "\"vertexIndex\" :",vertexIndex)
+					print("\"Theta\" :",Theta:toDeg(), Theta)
+					print("\"rX\" :",rX, "\"rx\" :",rx, "\"rY\" :",rY, "\"ry\" :",ry)
+					print("\"r\" :",r)
+					print("\"originPos\" :",originPos)
+					print("[Final-Vertex-Pos-X] :", "cos(", Theta.x, ")", "=", math.cos(Theta.x), "*", r.x)
+					print("[Final-Vertex-Pos-Y] :", "cos(", Theta.y, ")", "=", math.cos(Theta.y), "*", originPos.y)
+					print("Final-Vertex-Pos :",TAIL[bone].gapfill:getVertices(TEXTURE)[vertexIndex]:getPos())
+				end
+
 			end
-		--[=[elseif bone > 3 then
+		--[=[
+		elseif bone > 3 then
 			for vertexKey, vertexIndex in pairs(VERTICES.NORTHSIDE) do
 				local Theta = TAIL[bone]:getRot():toRad() --NOTE: `getRot` should be replaced with `getAnimRot`
 
@@ -165,29 +203,35 @@ events.RENDER:register(function (delta, context, matrix)
 				)
 			end--]=]
 		end
-	end
+	end--]==]
 
 	
 
 end, "FoxTailHandler-RENDER")
 
 
-local rotDirection = { 1, 1, 1}
+local targetRot = vec(90, 90, 0):div(3, 3, 0)
 events.TICK:register(function()
 
-	for bone = 1, 3, 1 do
-		if rotDirection[bone] > 0 then
-			TAIL[bone]:setRot(TAIL[bone]:getRot() + vec(1, 0, 0))
+	for bone = 1, #TAIL - 3, 1 do
+		local rot = TAIL[bone]:getRot()
 
-			if TAIL[bone]:getRot().x >= 90 / 3 then
-				rotDirection[bone] = -1
-			end
-		elseif rotDirection[bone] < 0 then
-			TAIL[bone]:setRot(TAIL[bone]:getRot() - vec(1, 0, 0))
+		if rot.x < targetRot.x then
+			TAIL[bone]:setRot(rot + vec(1, 0, 0))
+		elseif rot.x > targetRot.x then
+			TAIL[bone]:setRot(rot - vec(1, 0, 0))
+		else
+			targetRot = targetRot:mul(-1, 1, 1)
+		end
 
-			if TAIL[bone]:getRot().x <= -90 / 3 then
-				rotDirection[bone] = 1
-			end
+		rot = TAIL[bone]:getRot()
+
+		if rot.y < targetRot.y then
+			TAIL[bone]:setRot(rot + vec(0, 1, 0))
+		elseif rot.y > targetRot.y then
+			TAIL[bone]:setRot(rot - vec(0, 1, 0))
+		else
+			targetRot = targetRot:mul(1, -1, 1)
 		end
 	end
 
@@ -197,12 +241,12 @@ end, "FoxTailHandler-TICK")
 
 
 -- DEBUG
-local PART = TAIL[5].gapfill
+local PART = TAIL[0].gapfill
 
 local FaceGroups = { {} }
 
 local face,index = 1,0
-local OFFSET = vec(1, 1, 1)
+local OFFSET = vec(0, 1, 0)
 
 local save = {}
 
@@ -268,6 +312,8 @@ events.KEY_PRESS:register(function(key, state, modifiers)
 
 		face = 0
 		index = 0
+		
+		enableDEBUG = not enableDEBUG
 
 	end
 end, "FoxTailHandler-DEBUG")
