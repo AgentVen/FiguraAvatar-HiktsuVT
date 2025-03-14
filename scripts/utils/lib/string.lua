@@ -13,21 +13,21 @@ function string.split(self, sep, init, plain)
 	do -- Parameter type checking & correction
 	
 		assert(type(self) == 'string', 
-		"(string.split #1) Invalid type!\n\tExpected type: 'string'. Got: '"..type(self).."'."
+		("(string.split #1) Invalid type!\n\tExpected type: 'string'. Got: '%s'."):format(type(self))
 		)
 
 		assert(type(sep) == 'string' or type(sep) == 'nil',
-		"(string.split #2) Invalid type!\n\tExpected type: 'string', or 'nil'. Got: '"..type(sep).."'."
+		("(string.split #2) Invalid type!\n\tExpected type: 'string', or 'nil'. Got: '%s'."):format(type(sep))
 		)
 		sep = sep or ","
 
 		assert(type(init) == 'number' or type(init) == 'nil',
-		"(string.split #3) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '"..type(init).."'."
+		("(string.split #3) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '%s'."):format(type(init))
 		)
 		init = init or 1
 
 		assert(type(plain) == 'boolean' or type(plain) == 'nil',
-		"(string.split #4) Invalid type!\n\tExpected type: 'boolean', or 'nil'. Got: '"..type(plain).."'."
+		("(string.split #4) Invalid type!\n\tExpected type: 'boolean', or 'nil'. Got: '%s'."):format(type(plain))
 		)
 		if plain == nil then plain = true end
 
