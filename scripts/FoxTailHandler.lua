@@ -135,20 +135,19 @@ events.RENDER:register(function (delta, context, matrix)
 				local ry = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey:reverse():gsub(".", flip.UpDown)]]:getPos().y
 				local r = vec(rX - rx, rY - ry):div(2, 2)
 
+
 				local originPos = vec(
 					(math.max(rX, rx) - math.abs(r.x)),
 					(math.max(rY, ry) - math.abs(r.y)),
 					TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey]]:getPos().z
 				)
 
-
 				local newPos = vec(
-					originPos.x + (math.sign(Theta.x) * math.cos(Theta.x)) * r.x,
-					originPos.y + (math.sign(Theta.y) * math.cos(Theta.y)) * r.y,
+					originPos.x + (math.cos(Theta.x) * r.x),
+					originPos.y + (math.cos(Theta.y) * r.y),
 					originPos.z + (
-						math.abs((math.sign(Theta.x) * math.sin(Theta.x)) * r.x)
-					  +	math.abs((math.sign(Theta.y) * math.sin(Theta.y)) * r.y)
-					)
+ 						math.sin(Theta.x) * r.x + math.sin(Theta.y) * r.y
+ 					)
 				)
 
 				if newPos.z <= originPos.z then
@@ -209,35 +208,41 @@ events.RENDER:register(function (delta, context, matrix)
 
 end, "FoxTailHandler-RENDER")
 
-
+local rotX,rotY = 0,0
 local targetRot = vec(90, 90, 0):div(3, 3, 0)
 events.TICK:register(function()
 
 	for bone = 1, #TAIL - 3, 1 do
 		local rot = TAIL[bone]:getRot()
 
-		if rot.x < targetRot.x then
-			TAIL[bone]:setRot(rot + vec(1, 0, 0))
-		elseif rot.x > targetRot.x then
-			TAIL[bone]:setRot(rot - vec(1, 0, 0))
-		else
-			targetRot = targetRot:mul(-1, 1, 1)
-		end
+		--if rot.x ~= targetRot.x then
 
-		rot = TAIL[bone]:getRot()
+			if (rotX == 1) and rot.x < targetRot.x then
+				TAIL[bone]:setRot(rot + vec(1, 0, 0))
+			elseif (rotX == -1) and rot.x > -targetRot.x then
+				TAIL[bone]:setRot(rot - vec(1, 0, 0))
+			end
 
-		if rot.y < targetRot.y then
-			TAIL[bone]:setRot(rot + vec(0, 1, 0))
-		elseif rot.y > targetRot.y then
-			TAIL[bone]:setRot(rot - vec(0, 1, 0))
-		else
-			targetRot = targetRot:mul(1, -1, 1)
-		end
+			--if TAIL[bone]:getRot().x == targetRot.x then
+			--	targetRot = targetRot:mul(1, -1, 1)
+			--end
+
+		--elseif rot.y ~= targetRot.y then
+
+			if (rotY == 1) and rot.y < targetRot.y then
+				TAIL[bone]:setRot(rot + vec(0, 1, 0))
+			elseif (rotY == -1) and rot.y > -targetRot.y then
+				TAIL[bone]:setRot(rot - vec(0, 1, 0))
+			end
+
+			--if TAIL[bone]:getRot().y == targetRot.y then
+			--	targetRot = targetRot:mul(-1, 1, 1)
+			--end
+
+		--end
 	end
 
 end, "FoxTailHandler-TICK")
-
-
 
 
 -- DEBUG
@@ -315,5 +320,29 @@ events.KEY_PRESS:register(function(key, state, modifiers)
 		
 		enableDEBUG = not enableDEBUG
 
+	elseif key == 262 then
+		if state >= 1 then
+			rotX = -1
+		else
+			rotX = 0
+		end
+	elseif key == 263 then
+		if state >= 1 then
+			rotX = 1
+		else
+			rotX = 0
+		end
+	elseif key == 264 then
+		if state >= 1 then
+			rotY = -1
+		else
+			rotY = 0
+		end
+	elseif key == 265 then
+		if state >= 1 then
+			rotY = 1
+		else
+			rotY = 0
+		end
 	end
 end, "FoxTailHandler-DEBUG")
