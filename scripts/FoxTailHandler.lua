@@ -32,27 +32,106 @@ local TEXTURE = "textures.tail"
 -- And it's the ton of math I was originally trying to advoid.
 
 
-local VERTICES = {
-	NORTHSIDE = {
-		["EU"] = 5,	["WU"] = 11,	["UE"] = 3,	["DE"] = 14,
-		["ED"] = 8,	["WD"] = 12,	["UW"] = 4,	["DW"] = 13
-	};
-	SOUTHSIDE = {
-		["EU"] = 6,	["WU"] = 10,	["UE"] = 2,	["DE"] = 15,
-		["ED"] = 7,	["WD"] = 9,	["UW"] = 1,	["DW"] = 16
-	}
-}
-
-
-local flip = {
-	UpDown = { ["U"] = "D", ["D"] = "U" };
-	NorthSouth = { ["N"] = "S", ["S"] = "N" };
-	EastWest = { ["E"] = "W", ["W"] = "E" };
-};
-
+local VERTICES = setmetatable({
+	["ENU"] = 5,	["WNU"] = 11,	["UNE"] = 3,	["DNE"] = 14,
+	["END"] = 8,	["WND"] = 12,	["UNW"] = 4,	["DNW"] = 13,
+	["ESU"] = 6,	["WSU"] = 10,	["USE"] = 2,	["DSE"] = 15,
+	["ESD"] = 7,	["WSD"] = 9,	["USW"] = 1,	["DSW"] = 16;
+},{
+	__call = function(t, vertexKey, ...)
+		assert(type(vertexKey) == 'string', "Bad Argument #2; invalid type. (expected type(s): 'string', got type: '"..type(vertexKey)..".)")
+		
+		if type(...) ~= 'nil' then
+			for i = 1, select(..., "#"), 1 do
+				local arg_i = select(..., i)
+				assert(type(arg_i) == 'string', "Bad Argument #"..i + 2 .."; invalid type. (expected type(s): 'string', got type: '"..type(arg_i)..".)")
+				
+				if arg_i:find("^[NSEWUD][NSEWUD]$") then
+					local A,B = arg_i:match("([NSEWUD])([NSEWUD])")
+					vertexKey = vertexKey:gsub(".", { ["..A.."] = "..B..", ["..B.."] = "..A.." })
+				elseif arg_i:find("^[1-3][1-3][1-3]$") then
+					local newVertexKey = ""
+					for p in arg_i:gmatch("([1-3])") do
+						p = tonumber(p)
+						newVertexKey = newVertexKey..vertexKey:sub(p,p)
+					end
+					vertexKey = newVertexKey
+				else
+					error("Bad Argument #"..i + 2 .."; invalid/malformed operation.", 6)
+				end
+			end
+		end
+		
+		return t[vertexKey]
+	end		
+})
 
 
 local enableDEBUG = false
+local function getVertexGapfillPos(bone, vertexKey, Theta, Phi)
+	local nativeOriginPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES(vertexKey, "NS")]:getPos()
+	local siblingOriginPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES(vertexKey, "NS", "EW")]:getPos().x
+	local twinOriginPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES(vertexKey, "NS", "321")]:getPos().y
+	local cousinOriginPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES(vertexKey, "NS", "321", "UD")]:getPos().y
+	
+	-- This won’t work if the sides are unequal.
+	-- 
+	-- That would require us to get a point on the circumference 
+	-- of an Ellipsoid (3D ellipsis), this code is for getting 
+	-- a point on the circumference of a Sphere.
+	-- It *can* be adapted for such, if we could get `r.z`.
+	-- But getting `r.z` is just the “Double-Z to One-Z” problem all over again.
+		
+	local r = vec(
+		(nativeOriginPos.x - siblingOriginPos) / 2,
+		(twinOriginPos - cousinOriginPos) / 2
+	)
+	
+	local offsetOriginPos = vec(
+		math.max(nativeOriginPos.x, siblingOriginPos) - math.abs(r.x),
+		math.max(twinOriginPos, cousinOriginPos) - math.abs(r.y),
+		nativeOriginPos.z
+	)
+
+
+	local newPos = offsetOriginPos + vec(
+		r.x * (((Theta ~= 0) and math.cos(Theta)) or Theta) * math.sin(Phi),
+		r.y * (((Phi ~= 0) and math.cos(Phi)) or Phi),
+		r.x * math.sin(Theta) * math.sin(Phi)
+	)
+
+	if newPos.z <= offsetOriginPos.z then
+		newPos = offsetOriginPos
+	end
+
+	--[[ 
+	if enableDEBUG then
+		do
+			local sysTime = client:getSystemTime()
+			local seconds = math.floor(sysTime / 1000)
+			local milliseconds = sysTime % 1000
+			local minutes = math.floor(seconds / 60)
+			seconds = seconds % 60
+			local hours = math.floor(minutes / 60)
+			minutes = minutes % 60
+
+			print(string.format("\n< @%02d:%02d:%02d.%03d >", hours, minutes, seconds, milliseconds))
+		end
+
+
+		print("\"bone\" :",bone, "\"vertexKey\" :",vertexKey, "\"vertex_index\" :",VERTICES[vertexKey])
+		print("\"Theta\" :",Theta:toDeg(),Theta, \"Phi\" :",Phi:toDeg(),Phi)
+		print("\"nativeOriginPos\" :",nativeOriginPos, "\"siblingOriginPos\" :",siblingOriginPos, "\"twinOriginPos\" :",twinOriginPos, "\"cousinOriginPos\" :",cousinOriginPos)
+		print("\"r\" :",r)
+		print("\"offsetOriginPos\" :",offsetOriginPos)
+		print("\"newPos\" :",newPos)
+	end
+	--]]
+
+	TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES[vertexKey]]:setPos(newPos)
+
+	--return newPos --TODO: Work out UV
+end
 
 
 events.RENDER:register(function (delta, context, matrix)
@@ -67,6 +146,7 @@ events.RENDER:register(function (delta, context, matrix)
 		TAIL[6].Base:setOpacity(0.5)
 	end
 
+--[[ TODO: Update this, or delete it
 	-- Whats going on here:
 	-- 
 	-- 
@@ -121,92 +201,29 @@ events.RENDER:register(function (delta, context, matrix)
 	-- Likely-hood is
 	-- 
 	-- This is done by
+--]]
 
-
-	-- [==[
-	for bone = 0, #TAIL - 4, 1 do
+	for bone = 0, #TAIL, 1 do
 		if bone < 3 then
-			for vertexKey, vertexIndex in pairs(VERTICES.SOUTHSIDE) do
-				local Theta = TAIL[bone + 1]:getRot():toRad() --NOTE: `getRot` should be replaced with `getAnimRot`
+			-- TODO: Idealy, we should replace `:getRot()` with `:getAnimRot()`.
+			-- However I don't know how `:getAnimRot()` exactly works in relation to `:getRot()`.
+			local Theta, Phi = TAIL[bone + 1]:getRot():toRad().xy:unpack()
 
-				local rX = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey]]:getPos().x
-				local rx = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey:gsub(".", flip.EastWest)]]:getPos().x
-				local rY = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey:reverse()]]:getPos().y
-				local ry = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey:reverse():gsub(".", flip.UpDown)]]:getPos().y
-				local r = vec(rX - rx, rY - ry):div(2, 2)
+			getVertexGapfillPos(bone, "ENU", Theta, Phi)
+			getVertexGapfillPos(bone, "END", Theta, Phi)
+			getVertexGapfillPos(bone, "WNU", Theta, Phi)
+			getVertexGapfillPos(bone, "WND", Theta, Phi)
+			getVertexGapfillPos(bone, "UNE", Theta, Phi)
+			getVertexGapfillPos(bone, "UNW", Theta, Phi)
+			getVertexGapfillPos(bone, "DNE", Theta, Phi)
+			getVertexGapfillPos(bone, "DNW", Theta, Phi)
 
-
-				local originPos = vec(
-					(math.max(rX, rx) - math.abs(r.x)),
-					(math.max(rY, ry) - math.abs(r.y)),
-					TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.NORTHSIDE[vertexKey]]:getPos().z
-				)
-
-				local newPos = vec(
-					originPos.x + (math.cos(Theta.x) * r.x),
-					originPos.y + (math.cos(Theta.y) * r.y),
-					originPos.z + (
- 						math.sin(Theta.x) * r.x + math.sin(Theta.y) * r.y
- 					)
-				)
-
-				if newPos.z <= originPos.z then
-					newPos = originPos
-				end
-
-				TAIL[bone].gapfill:getVertices(TEXTURE)[vertexIndex]:setPos(newPos)
-
-
-				if enableDEBUG then
-					do
-						local sysTime = client:getSystemTime()
-						local seconds = math.floor(sysTime / 1000)
-						local milliseconds = sysTime % 1000
-						local minutes = math.floor(seconds / 60)
-						seconds = seconds % 60
-						local hours = math.floor(minutes / 60)
-						minutes = minutes % 60
-
-						print(string.format("\n< @%02d:%02d:%02d.%03d >", hours, minutes, seconds, milliseconds))
-					end
-
-
-					print("\"bone\" :",bone, "\"vertexKey\" :",vertexKey, "\"vertexIndex\" :",vertexIndex)
-					print("\"Theta\" :",Theta:toDeg(), Theta)
-					print("\"rX\" :",rX, "\"rx\" :",rx, "\"rY\" :",rY, "\"ry\" :",ry)
-					print("\"r\" :",r)
-					print("\"originPos\" :",originPos)
-					print("[Final-Vertex-Pos-X] :", "cos(", Theta.x, ")", "=", math.cos(Theta.x), "*", r.x)
-					print("[Final-Vertex-Pos-Y] :", "cos(", Theta.y, ")", "=", math.cos(Theta.y), "*", originPos.y)
-					print("Final-Vertex-Pos :",TAIL[bone].gapfill:getVertices(TEXTURE)[vertexIndex]:getPos())
-				end
-
-			end
-		--[=[
 		elseif bone > 3 then
-			for vertexKey, vertexIndex in pairs(VERTICES.NORTHSIDE) do
-				local Theta = TAIL[bone]:getRot():toRad() --NOTE: `getRot` should be replaced with `getAnimRot`
-
-				local rX = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.SOUTHSIDE[vertexKey]]:getPos().x
-				local rx = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.SOUTHSIDE[vertexKey:gsub(".", flip.EastWest)]]:getPos().x
-				local rY = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.SOUTHSIDE[vertexKey:reverse()]]:getPos().y
-				local ry = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.SOUTHSIDE[vertexKey:reverse():gsub(".", flip.UpDown)]]:getPos().y
-				local r = vec((rX - rx) / 2, (rY - ry) / 2)
-				
-				local originPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES.SOUTHSIDE[vertexKey]]:getPos()
-				
-				TAIL[0].gapfill:getVertices(TEXTURE)[vertexIndex]:setPos(
-					math.cos(Theta.x) * r.x,
-					originPos.y + (((Theta.y ~= 0 ) and math.cos(Theta.y)) or Theta.y) * r.y,
-					originPos.z + math.abs(math.sin(Theta.x) * r.x)
-				)
-			end--]=]
 		end
-	end--]==]
-
-	
+	end
 
 end, "FoxTailHandler-RENDER")
+
 
 local rotX,rotY = 0,0
 local targetRot = vec(90, 90, 0):div(3, 3, 0)
