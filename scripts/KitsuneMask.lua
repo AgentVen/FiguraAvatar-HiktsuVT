@@ -1,4 +1,4 @@
----@class KisuneMaskClass #
+---@class KitsuneMaskClass #
 ---@field maskState number #
 
 
