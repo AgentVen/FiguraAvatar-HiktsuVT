@@ -3,7 +3,7 @@
   	"description": "Fanmade FiguraMC Avatar made for HiktsuVT on Twitch.",
 	"authors": ["AgentVenX","Discord@agentven"],
 	"color": "#D33E32",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"autoScripts": [
 		"scripts.utils.lib.table",
 		"scripts.utils.lib.string",
