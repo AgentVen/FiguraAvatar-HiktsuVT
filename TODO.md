@@ -1,18 +1,32 @@
 # Head
-- [ ] Spend some time working out the hair.
+- [x] Spend some time working out the hair.
 
 ## Mask
-- [ ] Simulated Gravity on the "dangling" parts on the "mask_fox" model.
+- [ ] Simulated Gravity/Physics on the "dangle" parts on the "mask_fox" model.
+	- [x] Reacts to head pitch (`rot.x`).
+	- [ ] Reacts to head pitch (`rot.x`) Δv.
+	- [ ] Reacts to head yaw (`rot.y`) Δv.
+	- [ ] Can react with twisting (`rot.z`).
+	- [ ] Reacts to player movement.
+		- [ ] Walking.
+		- [ ] Sprinting.
+		- [ ] Jumping.
+		- [ ] Falling.
+		- [ ] Swiming.
+		- [ ] Gliding/Flying.
+		- [ ] Animations?
+	- [ ] More dynamic string part (gapfill).
+	- [ ] "dangle" part from the metal 'tie'(?) to the bottom moving indepently.
 
 ## Ears
-- [ ] Ears droop as the user's percentage of health gets lower.
+- [ ] Ears droop as the player gets more hungry.
 - [ ] Maybe when wearing a helment, the ears are forced into lower position. So that we don't have a problem with cliping.
 
 
 # Body
 
 ## Tail
-- [ ] Tail drops as the user gets hungrier. At 3 or less hungry points, tail is dragging on the ground.
+- [ ] Tail drops as the player's health gets low.
 - [ ] When sitting, the tail will be proped up like how it show on Hiktsu's live model whilst streaming.
 
 ## Jacket
@@ -29,10 +43,12 @@
 
 # Other
 
+- [ ] Damage overlay over most but not all parts.
+	> Such as the mask.
+
 ## Global Variables
 - [ ] Ability to control Mask state.
 
 ## Configuration
 - [ ] For changing how the Avatar deals with certain pieces of different Armor sets when equiped.
 - [ ] Whether the ears should be unchanged (default), forced into a lower position (default for Vanllia Armors' Helments), or be disabled.
-	
