@@ -17,6 +17,7 @@
 		- [ ] Animations?
 	- [ ] More dynamic string part (gapfill).
 	- [ ] "dangle" part from the metal 'tie'(?) to the bottom moving indepently.
+- [ ] Make it so you can look through the eyes of the mask on the inside, but not the outside.
 
 ## Ears
 - [ ] Ears droop as the player gets more hungry.
