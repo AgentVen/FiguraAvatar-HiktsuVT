@@ -304,6 +304,11 @@ end
 
 
 events.RENDER:register(function (delta, context, matrix)
+
+	do
+		local hurt = player:getNbt().HurtTime > 0
+		TAIL[0]:setOverlay(hurt and 0 or nil, 1)
+	end
 	
 	do -- TEMP DEBUG
 		--TAIL[0].Base:setOpacity(0.75)
