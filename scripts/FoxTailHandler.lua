@@ -12,11 +12,11 @@ local TAIL = {
 }
 local TEXTURE = "textures.tail"
 
-
+--[[
 local VERTICES = setmetatable({
-	["ENU"] = 5,	["WNU"] = 11,	["UNE"] = 3,	["DNE"] = 14,
-	["END"] = 8,	["WND"] = 12,	["UNW"] = 4,	["DNW"] = 13,
-	["ESU"] = 6,	["WSU"] = 10,	["USE"] = 2,	["DSE"] = 15,
+	["ENU"] = 5,	["WNU"] = 11,	["UNE"] = 3,	["DNE"] = 14;
+	["END"] = 8,	["WND"] = 12,	["UNW"] = 4,	["DNW"] = 13;
+	["ESU"] = 6,	["WSU"] = 10,	["USE"] = 2,	["DSE"] = 15;
 	["ESD"] = 7,	["WSD"] = 9,	["USW"] = 1,	["DSW"] = 16;
 },{
 	__call = function(t, vertexKey, ...)
@@ -46,6 +46,107 @@ local VERTICES = setmetatable({
 		return t[vertexKey]
 	end		
 })
+--]]
+
+---@param t table<string, integer> # `VERTICES` table
+---@param vertexKey string # 3 char vertexKey
+---@param ... string # Transform operations (in order)
+---@return integer # Resulting vertex index
+---@return integer? # Dupe of resulting vertex index
+local function transformVertexKey(t, vertexKey, ...)
+	assert(type(vertexKey) == 'string', "Bad Argument #2; invalid type. (expected type(s): 'string', got type: '"..type(vertexKey)..".)")
+	
+	if type(...) ~= 'nil' then
+		for i = 1, select("#", ...), 1 do
+			local arg_i = select(i, ...)
+			assert(type(arg_i) == 'string', "Bad Argument #"..i + 2 .."; invalid type. (expected type(s): 'string', got type: '"..type(arg_i)..".)")
+			
+			if arg_i:find("^[NSEWUD][NSEWUD]$") then
+				local swapA,swapB = arg_i:match("([NSEWUD])([NSEWUD])")
+				vertexKey = vertexKey:gsub(".", { [""..swapA..""] = ""..swapB.."", [""..swapB..""] = ""..swapA.."" })
+			elseif arg_i:find("^[1-3][1-3][1-3]$") then
+				local newVertexKey = ""
+				for p in arg_i:gmatch("([1-3])") do
+					p = tonumber(p)
+					newVertexKey = newVertexKey..vertexKey:sub(p,p)
+				end
+				vertexKey = newVertexKey
+			else
+				error("Bad Argument #"..i + 2 .."; invalid/malformed operation.", 6)
+			end
+		end
+	end
+	
+	if type(t[vertexKey]) == 'table' then
+		return t[vertexKey][1]
+	end
+	return t[vertexKey]
+end
+local VERTICES = {
+	[0] = setmetatable({
+		["SEU"] = 34,	["SED"] = 33,	["SWU"] = 35,	["SWD"] = 36;
+		["ESU"] = 19,	["ESD"] = 20;
+		["WSU"] = 22,	["WSD"] = 21;
+		["USE"] = 25,	["USW"] = 28;
+		["DSE"] = 30,	["DSW"] = 31;
+	}, { __call = transformVertexKey }),
+	[1] = setmetatable({
+		["NEU"] = 21,	["NED"] = 22,	["NWU"] = 24,	["NWD"] = 23;
+		["SEU"] = 15,	["SED"] = 14,	["SWU"] = 16,	["SWD"] = 13;
+		["ENU"] = 2,	["END"] = 1,	["ESU"] = 3,	["ESD"] = 4;
+		["WNU"] = 19,	["WND"] = 20,	["WSU"] = 18,	["WSD"] = 17;
+		["UNE"] = 6,	["UNW"] = 7,	["USE"] = 5,	["USW"] = 8;
+		["DNE"] = 9,	["DNW"] = 12,	["DSE"] = 10,	["DSW"] = 11;
+	}, { __call = transformVertexKey }),
+	[2] = setmetatable({
+		["NEU"] = 22,	["NED"] = 23,	["NWU"] = 21,	["NWD"] = 24;
+		["SEU"] = 19,	["SED"] = 18,	["SWU"] = 20,	["SWD"] = 17;
+		["ENU"] = 2,	["END"] = 1,	["ESU"] = 3,	["ESD"] = 4;
+		["WNU"] = 7,	["WND"] = 8,	["WSU"] = 6,	["WSD"] = 5;
+		["UNE"] = 10,	["UNW"] = 11,	["USE"] = 9,	["USW"] = 12;
+		["DNE"] = 13,	["DNW"] = 16,	["DSE"] = 14,	["DSW"] = 15;
+	}, { __call = transformVertexKey }),
+	[3] = setmetatable({
+		["NEU"] = 20,	["NED"] = 17,	["NWU"] = 19,	["NWD"] = 18;
+		["SEU"] = 22,	["SED"] = 21,	["SWU"] = 23,	["SWD"] = 24;
+		["ENU"] = 2,	["END"] = 1,	["ESU"] = 3,	["ESD"] = 4;
+		["WNU"] = 7,	["WND"] = 8,	["WSU"] = 6,	["WSD"] = 5;
+		["UNE"] = 10,	["UNW"] = 11,	["USE"] = 9,	["USW"] = 12;
+		["DNE"] = 13,	["DNW"] = 16,	["DSE"] = 14,	["DSW"] = 15;
+	}, { __call = transformVertexKey }),
+	[4] = setmetatable({
+		["NEU"] = 20,	["NED"] = 17,	["NWU"] = 19,	["NWD"] = 18;
+		["SEU"] = 22,	["SED"] = 21,	["SWU"] = 23,	["SWD"] = 24;
+		["ENU"] = 2,	["END"] = 1,	["ESU"] = 3,	["ESD"] = 4;
+		["WNU"] = 7,	["WND"] = 8,	["WSU"] = 6,	["WSD"] = 5;
+		["UNE"] = 10,	["UNW"] = 11,	["USE"] = 9,	["USW"] = 12;
+		["DNE"] = 13,	["DNW"] = 16,	["DSE"] = 14,	["DSW"] = 15;
+	}, { __call = transformVertexKey }),
+	[5] = setmetatable({
+		["NEU"] = 17,	["NED"] = 18,	["NWU"] = 20,	["NWD"] = 19;
+		["SEU"] = 22,	["SED"] = 21,	["SWU"] = 23,	["SWD"] = 24;
+		["ENU"] = 2,	["END"] = 1,	["ESU"] = 3,	["ESD"] = 4;
+		["WNU"] = 7,	["WND"] = 8,	["WSU"] = 6,	["WSD"] = 5;
+		["UNE"] = 10,	["UNW"] = 11,	["USE"] = 9,	["USW"] = 12;
+		["DNE"] = 13,	["DNW"] = 16,	["DSE"] = 14,	["DSW"] = 15;
+	}, { __call = transformVertexKey }),
+	[6] = setmetatable({
+		["NEU"] = 19,	["NED"] = 20,	["NWU"] = 18,	["NWD"] = 17;
+		["ENU"] = 1,	["END"] = {3,4};
+		["WNU"] = 6,	["WND"] = {7,8};
+		["UNE"] = 9,	["UNW"] = 10;
+		["DNE"] = 13,	["DNW"] = {15,16};
+	}, { __call = transformVertexKey })
+}
+
+local VERTICES_OrignPoses = {}
+for bone = 0, #TAIL, 1 do
+	VERTICES_OrignPoses[bone] = {}
+	for _,vertexIndex in pairs(VERTICES[bone]) do
+		vertexIndex = (type(vertexIndex) == 'table' and vertexIndex[1]) or vertexIndex
+		VERTICES_OrignPoses[bone][vertexIndex] = TAIL[bone].Base:getVertices(TEXTURE)[vertexIndex]:getPos()
+	end
+end
 
 
 ---"Gap-crossing" method, solution #1: Set Pos to Get Pos.
@@ -219,83 +320,31 @@ end
 --]]
 
 ---"Deform-filling" method: Adjusting the Z of the vertices of the Base parts of BoneA and BoneB to meat in the middle, via tangents.
-local TAIL_0_VERTICES = setmetatable({
-	["SED"] = 33, ["SEU"] = 34, ["SWU"] = 35, ["SWD"] = 36;
-	["ESU"] = 19, ["ESD"] = 20;
-	["WSD"] = 21, ["WSU"] = 22;
-	["USE"] = 25, ["USW"] = 28;
-	["DSE"] = 30, ["DSW"] = 31;
-},{
-	__call = function(t, vertexKey, ...)
-		assert(type(vertexKey) == 'string', "Bad Argument #2; invalid type. (expected type(s): 'string', got type: '"..type(vertexKey)..".)")
-		
-		if type(...) ~= 'nil' then
-			for i = 1, select("#", ...), 1 do
-				local arg_i = select(i, ...)
-				assert(type(arg_i) == 'string', "Bad Argument #"..i + 2 .."; invalid type. (expected type(s): 'string', got type: '"..type(arg_i)..".)")
-				
-				if arg_i:find("^[NSEWUD][NSEWUD]$") then
-					local swapA,swapB = arg_i:match("([NSEWUD])([NSEWUD])")
-					vertexKey = vertexKey:gsub(".", { [""..swapA..""] = ""..swapB.."", [""..swapB..""] = ""..swapA.."" })
-				elseif arg_i:find("^[1-3][1-3][1-3]$") then
-					local newVertexKey = ""
-					for p in arg_i:gmatch("([1-3])") do
-						p = tonumber(p)
-						newVertexKey = newVertexKey..vertexKey:sub(p,p)
-					end
-					vertexKey = newVertexKey
-				else
-					error("Bad Argument #"..i + 2 .."; invalid/malformed operation.", 6)
-				end
-			end
-		end
-		
-		return t[vertexKey]
-	end	
-})
+local function getVertexGapfillPosByDeforming(bone, vertexKey, Theta, Phi)
 
-local vertexOriginPoses = {}
-local function getVertexGapfillPosByDeforming(bone, vertexKey, Theta)
-	local nativeOriginPos = vertexOriginPoses[TAIL_0_VERTICES(vertexKey)] or TAIL[bone].Base:getVertices(TEXTURE)[TAIL_0_VERTICES(vertexKey)]:getPos()
-	local siblingOriginPos = vertexOriginPoses[TAIL_0_VERTICES(vertexKey, "EW")] or TAIL[bone].Base:getVertices(TEXTURE)[TAIL_0_VERTICES(vertexKey, "EW")]:getPos()
-	
-	if not vertexOriginPoses[TAIL_0_VERTICES(vertexKey)] then
-		vertexOriginPoses[TAIL_0_VERTICES(vertexKey)] = nativeOriginPos
-	end
-	if not vertexOriginPoses[TAIL_0_VERTICES(vertexKey, "EW")] then
-		vertexOriginPoses[TAIL_0_VERTICES(vertexKey, "EW")] = siblingOriginPos
-	end
+	-- To get the twin/cousinOriginPos we need the order of the key to be reversed ("321"),
+	-- But for vertices on the North & South faces, when getting the twin & cousin origin pos we don't want to reverse the order.
+	local orderKey = ((vertexKey:sub(1,1) == "N" or vertexKey:sub(1,1) == "S") and "123") or "321"
 
-	local r = (nativeOriginPos.x - siblingOriginPos.x) / 2
+	local nativeOriginPos = VERTICES_OrignPoses[bone][VERTICES[bone](vertexKey)]
+	local siblingOriginPos = VERTICES_OrignPoses[bone][VERTICES[bone](vertexKey, "EW")]
+	local twinOriginPos = VERTICES_OrignPoses[bone][VERTICES[bone](vertexKey, orderKey)]
+	local cousinOriginPos = VERTICES_OrignPoses[bone][VERTICES[bone](vertexKey, orderKey, "UD")]
+
+	local r = vec(
+		(nativeOriginPos.x - siblingOriginPos.x) / 2,
+		(twinOriginPos.y - cousinOriginPos.y) / 2
+	)
 
 	local newPos = vec(
 		nativeOriginPos.x, nativeOriginPos.y,
-		nativeOriginPos.z - (math.tan(Theta / 2) * r)
+		nativeOriginPos.z - (r.x * math.tan(Theta / 2) + r.y * math.tan(Phi / 2))
 	)
 
-	TAIL[bone].Base:getVertices(TEXTURE)[TAIL_0_VERTICES[vertexKey]]:setPos(newPos)
-
-	--return newPos --TODO: Work out UV
-end
-local function getVertexGapfillPosByDeforming_y(bone, vertexKey, Phi)
-	local nativeOriginPos = vertexOriginPoses[TAIL_0_VERTICES(vertexKey)] or TAIL[bone].Base:getVertices(TEXTURE)[TAIL_0_VERTICES(vertexKey)]:getPos()
-	local siblingOriginPos = vertexOriginPoses[TAIL_0_VERTICES(vertexKey, "UD")] or TAIL[bone].Base:getVertices(TEXTURE)[TAIL_0_VERTICES(vertexKey, "UD")]:getPos()
-	
-	if not vertexOriginPoses[TAIL_0_VERTICES(vertexKey)] then
-		vertexOriginPoses[TAIL_0_VERTICES(vertexKey)] = nativeOriginPos
+	TAIL[bone].Base:getVertices(TEXTURE)[VERTICES[bone](vertexKey)]:setPos(newPos)
+	if type(VERTICES[bone][vertexKey]) == 'table' then
+		TAIL[bone].Base:getVertices(TEXTURE)[VERTICES[bone][vertexKey][2]]:setPos(newPos)
 	end
-	if not vertexOriginPoses[TAIL_0_VERTICES(vertexKey, "UD")] then
-		vertexOriginPoses[TAIL_0_VERTICES(vertexKey, "UD")] = siblingOriginPos
-	end
-
-	local r = (nativeOriginPos.y - siblingOriginPos.y) / 2
-
-	local newPos = vec(
-		nativeOriginPos.x, nativeOriginPos.y,
-		nativeOriginPos.z - (math.tan(Phi / 2) * r)
-	)
-
-	TAIL[bone].Base:getVertices(TEXTURE)[TAIL_0_VERTICES[vertexKey]]:setPos(newPos)
 
 	--return newPos --TODO: Work out UV
 end
@@ -305,79 +354,65 @@ end
 
 events.RENDER:register(function (delta, context, matrix)
 
-	do
-		local hurt = player:getNbt().HurtTime > 0
-		TAIL[0]:setOverlay(hurt and 0 or nil, 1)
-	end
-	
-	do -- TEMP DEBUG
-		--TAIL[0].Base:setOpacity(0.75)
-		TAIL[1].Base:setOpacity(0.75)
-		TAIL[2].Base:setOpacity(0.75)
-		TAIL[3].Base:setOpacity(0.75)
-		TAIL[4].Base:setOpacity(0.75)
-		TAIL[5].Base:setOpacity(0.75)
-		TAIL[6].Base:setOpacity(0.75)
-	end--]]
+	--[[ TODO: Update this, or delete it
+		-- Whats going on here:
+		-- 
+		-- 
+		--                        `.                       
+		--                          `.                     
+		--                            `.                   
+		--        TAIL[B]               `.                 
+		--                   _.----------.`.               
+		--                .-º             "º-. (x,z)       
+		--              ,'                   _B,           
+		--             /                   _/ | \          
+		--           ,'                 r_/   |  `,        
+		-- .         |                 _/.    |z  |        
+		--  `.      |'               _/ θ \   |   `|       
+		--    `.    |...............<_____/___|____A (x,z) 
+		--      `.  |,          .'       x        ,|       
+		--        `.:|        .'                  |:       
+		--          ::,     .'                   ,':       
+		--          : `\  .'                    /  :       
+		--          :   `.                    ,'   :       
+		--          :     `-._            _.-'     :       
+		--          :         °----------°         :       
+		--          :                              :       
+		--          :            TAIL[A]           :       
+		-- 
+		--
+		-- Since we can't correct the vertex position by getting the position of a vertex on a different Mesh,
+		--  we need to use math to get the position.
+		-- 
+		-- Specifically, what we need is to get a point on a circumference from an angle.
+		-- This can be done with Simple Trigonometry and a mathematically-existing circle.
+		-- 
+		-- 
+		-- For rotation on the x-axis (Side-to-Side):
+		-- 
+		--       x = cos(θ.x) * r.x     z = sin(θ.x) * r.x
+		-- 
+		-- For rotation on the y-axis (Up-and-Down):
+		-- 
+		--       y = cos(θ.y) * r.y     z = sin(θ.y) * r.y
+		-- 
+		-- `θ` is the rotation of TAIL[B]. 
+		--  `θ.x` is the rotation of TAIL[B] on the `x` axis. 
+		--  `θ.y` is the rotation of TAIL[B] on the `y` axis.
+		-- `r` is the radius of the mathematically-existing circle. 
+		--  `r.x` is the radius calulated on the `x` axis. 
+		--  `r.y` is the radius calulated on the `y` axis.
+		-- 
+		-- 
+		-- However, remember that the vertices are realitive to a hidden 0,0,0 point. Which initally is the 
+		--  same as the "Model Space"'s 0,0,0 point, it then becomes realitive to the Part at runtime.
+		-- Likely-hood is
+		-- 
+		-- This is done by
+	--]]
 
---[[ TODO: Update this, or delete it
-	-- Whats going on here:
-	-- 
-	-- 
-	--                        `.                       
-	--                          `.                     
-	--                            `.                   
-	--        TAIL[B]               `.                 
-	--                   _.----------.`.               
-	--                .-º             "º-. (x,z)       
-	--              ,'                   _B,           
-	--             /                   _/ | \          
-	--           ,'                 r_/   |  `,        
-	-- .         |                 _/.    |z  |        
-	--  `.      |'               _/ θ \   |   `|       
-	--    `.    |...............<_____/___|____A (x,z) 
-	--      `.  |,          .'       x        ,|       
-	--        `.:|        .'                  |:       
-	--          ::,     .'                   ,':       
-	--          : `\  .'                    /  :       
-	--          :   `.                    ,'   :       
-	--          :     `-._            _.-'     :       
-	--          :         °----------°         :       
-	--          :                              :       
-	--          :            TAIL[A]           :       
-	-- 
-	--
-	-- Since we can't correct the vertex position by getting the position of a vertex on a different Mesh,
-	--  we need to use math to get the position.
-	-- 
-	-- Specifically, what we need is to get a point on a circumference from an angle.
-	-- This can be done with Simple Trigonometry and a mathematically-existing circle.
-	-- 
-	-- 
-	-- For rotation on the x-axis (Side-to-Side):
-	-- 
-	--       x = cos(θ.x) * r.x     z = sin(θ.x) * r.x
-	-- 
-	-- For rotation on the y-axis (Up-and-Down):
-	-- 
-	--       y = cos(θ.y) * r.y     z = sin(θ.y) * r.y
-	-- 
-	-- `θ` is the rotation of TAIL[B]. 
-	--  `θ.x` is the rotation of TAIL[B] on the `x` axis. 
-	--  `θ.y` is the rotation of TAIL[B] on the `y` axis.
-	-- `r` is the radius of the mathematically-existing circle. 
-	--  `r.x` is the radius calulated on the `x` axis. 
-	--  `r.y` is the radius calulated on the `y` axis.
-	-- 
-	-- 
-	-- However, remember that the vertices are realitive to a hidden 0,0,0 point. Which initally is the 
-	--  same as the "Model Space"'s 0,0,0 point, it then becomes realitive to the Part at runtime.
-	-- Likely-hood is
-	-- 
-	-- This is done by
---]]
-
-	for bone = 0, #TAIL, 1 do
+	for bone = 0, #TAIL - 1, 1 do
+		--[[
 		if bone < 3 then
 			-- TODO-INVESTIGATE/TEST:
 			-- According to the documentation, `:getTrueRot()` should be exactly what we
@@ -387,7 +422,6 @@ events.RENDER:register(function (delta, context, matrix)
 			-- However, this needs to be tested.
 			local Theta, Phi = TAIL[bone + 1]:getTrueRot():toRad():unpack()
 
-			--[[
 			getVertexGapfillPosByCrossing_DoubleCircle(bone, "ESU", Theta, Phi)
 			getVertexGapfillPosByCrossing_DoubleCircle(bone, "ESD", Theta, Phi)
 			getVertexGapfillPosByCrossing_DoubleCircle(bone, "WSU", Theta, Phi)
@@ -396,35 +430,46 @@ events.RENDER:register(function (delta, context, matrix)
 			getVertexGapfillPosByCrossing_DoubleCircle(bone, "USW", Theta, Phi)
 			getVertexGapfillPosByCrossing_DoubleCircle(bone, "DSE", Theta, Phi)
 			getVertexGapfillPosByCrossing_DoubleCircle(bone, "DSW", Theta, Phi)
-			--]]
-
-
-
 		elseif bone > 3 then
 		end
+		--]]
+
+		local Theta, Phi = TAIL[bone + 1]:getTrueRot():toRad():unpack()
+		getVertexGapfillPosByDeforming(bone, "ESU", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "ESD", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "WSD", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "WSU", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "USE", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "USW", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "DSE", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "DSW", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "SED", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "SEU", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "SWU", Theta, Phi)
+		getVertexGapfillPosByDeforming(bone, "SWD", Theta, Phi)
+
+		getVertexGapfillPosByDeforming(bone + 1, "ENU", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "END", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "WND", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "WNU", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "UNE", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "UNW", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "DNE", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "DNW", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "NED", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "NEU", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "NWU", -Theta, -Phi)
+		getVertexGapfillPosByDeforming(bone + 1, "NWD", -Theta, -Phi)
 	end
-	
-	-- [[
-	TAIL[0].gapfill:setOpacity(0)
-	local Theta, Phi = TAIL[1]:getTrueRot():toRad():unpack()
-	getVertexGapfillPosByDeforming_y(0, "ESU", Phi)
-	getVertexGapfillPosByDeforming_y(0, "ESD", Phi)
-	getVertexGapfillPosByDeforming_y(0, "WSD", Phi)
-	getVertexGapfillPosByDeforming_y(0, "WSU", Phi)
-	getVertexGapfillPosByDeforming(0, "USE", Theta)
-	getVertexGapfillPosByDeforming(0, "USW", Theta)
-	getVertexGapfillPosByDeforming(0, "DSE", Theta)
-	getVertexGapfillPosByDeforming(0, "DSW", Theta)
-	--]]
 
 end, "FoxTailHandler-RENDER")
 
 
 local rotX,rotY = 0,0
-local targetRot = vec(90, 90, 0):div(3, 3, 0)
+local targetRot = vec(90, 90, 0):div(5, 5, 0)
 events.TICK:register(function()
 
-	for bone = 1, #TAIL - 3, 1 do
+	for bone = 1, #TAIL, 1 do
 		local rot = TAIL[bone]:getRot()
 
 		--if rot.x ~= targetRot.x then
@@ -458,7 +503,7 @@ end, "FoxTailHandler-TICK")
 
 
 -- DEBUG
-local PART = TAIL[0].Base
+local PART = TAIL[3].Base
 
 local FaceGroups = { {} }
 
@@ -467,6 +512,19 @@ local OFFSET = vec(0, 1, 0)
 
 local save = {}
 
+local function drawVertexIndexText(vertex)
+	local newText = PART:newText("vertex"..vertex.."Text")
+	newText:setPos(PART:getVertices(TEXTURE)[vertex]:getPos():sub(0, 13, 0))
+	newText:setRot(90, 0, 0)
+	newText:setText(vertex)
+	newText:setAlignment("CENTER")
+	newText:setWrap(false)
+	newText:setScale(1/4)
+	--newText:setSeeThrough(true)
+	return newText
+end
+
+local renderTextTasks = {}
 events.KEY_PRESS:register(function(key, state, modifiers)
 	if key == 302 and state == 1 then
 		
@@ -484,6 +542,7 @@ events.KEY_PRESS:register(function(key, state, modifiers)
 
 	elseif key == 303 and state == 1 then
 
+		--[=[
 		if face ~= 0 then
 			if save[0] then
 				save[0] = nil
@@ -492,6 +551,13 @@ events.KEY_PRESS:register(function(key, state, modifiers)
 			for i = 1, #FaceGroups[face], 1 do
 				PART:getVertices(TEXTURE)[FaceGroups[face][i]]:setPos(save[i])
 			end
+		end
+		--]=]
+		if #renderTextTasks > 0 then
+			for i = 1, #renderTextTasks do
+				PART:removeTask(renderTextTasks[i])
+			end
+			renderTextTasks = {}
 		end
 
 		face = face + 1
@@ -503,11 +569,13 @@ events.KEY_PRESS:register(function(key, state, modifiers)
 		print("#"..face)
 
 		for i = 1, #FaceGroups[face], 1 do
-			save[i] = PART:getVertices(TEXTURE)[FaceGroups[face][i]]:getPos()
-			PART:getVertices(TEXTURE)[FaceGroups[face][i]]:setPos(save[i] + OFFSET)
+			--save[i] = PART:getVertices(TEXTURE)[FaceGroups[face][i]]:getPos()
+			--PART:getVertices(TEXTURE)[FaceGroups[face][i]]:setPos(save[i] + OFFSET)
+			table.insert(renderTextTasks, drawVertexIndexText(FaceGroups[face][i]))
 
 			print(FaceGroups[face][i])
 		end
+
 
 	elseif key == 304 and state == 1 then
 
@@ -529,8 +597,6 @@ events.KEY_PRESS:register(function(key, state, modifiers)
 
 		face = 0
 		index = 0
-		
-		enableDEBUG = not enableDEBUG
 
 	elseif key == 262 then
 		if state >= 1 then
