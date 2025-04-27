@@ -54,12 +54,12 @@ local VERTICES = setmetatable({
 ---@return integer # Resulting vertex index
 ---@return integer? # Dupe of resulting vertex index
 local function transformVertexKey(t, vertexKey, ...)
-	assert(type(vertexKey) == 'string', "Bad Argument #2; invalid type. (expected type(s): 'string', got type: '"..type(vertexKey)..".)")
+	assert(type(vertexKey) == 'string', ("Bad Argument #2; Invalid type. (Expected type(s): 'string'. Got type: '%s'.)"):format(type(vertexKey)))
 	
 	if type(...) ~= 'nil' then
 		for i = 1, select("#", ...), 1 do
 			local arg_i = select(i, ...)
-			assert(type(arg_i) == 'string', "Bad Argument #"..i + 2 .."; invalid type. (expected type(s): 'string', got type: '"..type(arg_i)..".)")
+			assert(type(arg_i) == 'string', ("Bad Argument #%i; Invalid type. (Expected type(s): 'string'. Got type: '%s'.)"):format(i + 2, type(arg_i)))
 			
 			if arg_i:find("^[NSEWUD][NSEWUD]$") then
 				local swapA,swapB = arg_i:match("([NSEWUD])([NSEWUD])")

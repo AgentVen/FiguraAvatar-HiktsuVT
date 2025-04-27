@@ -38,7 +38,7 @@ local function toTimeTable(time)
 	do -- Parameter type checking & correction
 	
 		assert(type(time) == 'number',
-		"(dateTime.format #1) Invalid type!\n\tExpected type: 'number'. Got: '"..type(time).."'."
+		("Bad argument #1; Invalid type! (Expected type(s): 'number'. Got type: '%s'.)"):format(type(time))
 		)
 
 	end
@@ -65,14 +65,14 @@ local function format(time, pattern)
 	do -- Parameter type checking & correction
 	
 		assert(type(time) == 'number' or type(time) == 'table',
-		"(dateTime.format #1) Invalid type!\n\tExpected type: 'number', or 'table'. Got: '"..type(time).."'."
+		("Bad argument #1; Invalid type! (Expected type(s): 'number', or 'table'. Got type: '%s'.)"):format(type(time))
 		)
 		if type(time) == 'number' then
 			time = toTimeTable(time)
 		end
 
 		assert(type(pattern) == 'string' or type(pattern) == 'nil',
-		"(dateTime.format #2) Invalid type!\n\tExpected type: 'string', or 'nil'. Got: '"..type(pattern).."'."
+		("Bad argument #1; Invalid type! (Expected type(s): 'string', or 'nil'. Got type: '%s'.)"):format(type(pattern))
 		)
 		pattern = pattern or "HH:mm:ss.SSS"
 

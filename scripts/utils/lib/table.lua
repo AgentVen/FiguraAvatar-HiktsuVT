@@ -17,27 +17,27 @@ function table.find(haystack, needle, init, len, mode)
 	do -- Parameter type checking & correction
 		
 		assert(type(haystack) == 'table', 
-		("(table.find #1) Invalid type!\n\tExpected type: 'table'. Got: '%s'."):format(type(haystack))
+		("Bad argument #1; Invalid type! (Expected type(s): 'table'. Got type: '%s'.)"):format(type(haystack))
 		)
 
 		assert(type(init) == 'number' or type(init) == 'nil', 
-		("(table.find #2) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '%s'."):format(type(init))
+		("Bad argument #2; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(init))
 		)
 		init = init or 1
 		if init < 0 then init = #haystack + 1 + init end
 
 		assert(type(len) == 'number' or type(len) == 'nil', 
-		("(table.find #3) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '%s'."):format(type(len))
+		("Bad argument #3; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(len))
 		)
 		len = len or -1
 		if len < 0 then len = #haystack + 1 + len end
 
 		assert(type(mode) == 'number' or type(mode) == 'nil', 
-		("(table.find #4) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '%s'."):format(type(mode))
+		("Bad argument #4; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(mode))
 		)
 		mode = mode or 0
 		assert(mode >= 0 and mode <= 2,
-		("(table.find #4) Out of range!\n\tExpected a number: from 0, to 2. Got: %i."):format(mode)
+		("Bad argument #4; Out of range! (Expected a number: from 0, to 2. Got number: %i.)"):format(mode)
 		)
 
 	end
@@ -76,11 +76,11 @@ function table.clone(t, depth)
 	do -- Parameter type checking & correction
 	
 		assert(type(t) == 'table',
-		("(table.clone #1) Invalid type!\n\tExpected type: 'table'. Got: '%s'."):format(type(t))
+		("Bad argument #1; Invalid type! (Expected type(s): 'table'. Got type: '%s'.)"):format(type(t))
 		)
 
 		assert(type(depth) == 'number' or type(depth) == 'nil',
-		("(table.clone #2) Invalid type!\n\tExpected type: 'number', or 'nil'. Got: '%s'."):format(type(depth))
+		("Bad argument #2; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(depth))
 		)
 		depth = depth or 0
 
