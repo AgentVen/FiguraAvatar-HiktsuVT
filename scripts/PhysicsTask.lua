@@ -181,3 +181,11 @@ local function removePhysicsTask(modelPart, physicsTask)
 
 	-- TODO-MAYBE: Include a return of the modelPart for chaining like with the Render Task `removeTask()`.
 end
+
+
+return {
+	getPhysicsTask = getPhysicsTask,
+	newPhysicsTask = newPhysicsTask,
+	addPhysicsTask = addPhysicsTask,
+	removePhysicsTask = removePhysicsTask
+}
