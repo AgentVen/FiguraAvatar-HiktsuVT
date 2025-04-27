@@ -7,7 +7,8 @@
 	"autoScripts": [
 		"scripts.utils.lib.table",
 		"scripts.utils.lib.string",
-
-		"scripts.main"
+	
+		"scripts.main",
+		"scripts.PhysicsTask"
 	]
 }
