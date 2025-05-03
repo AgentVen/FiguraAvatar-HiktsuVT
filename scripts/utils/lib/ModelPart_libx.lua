@@ -47,3 +47,8 @@ local function getFullName(modelPart)
 
 	return "root."..fullName
 end
+
+return {
+	getAncestors = getAncestors,
+	getFullName = getFullName
+}
