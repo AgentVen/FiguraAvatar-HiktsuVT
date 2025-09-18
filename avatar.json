@@ -1,14 +1,15 @@
 {
  	"name": "Hiktsu",
   	"description": "Fanmade FiguraMC Avatar made for HiktsuVT on Twitch.",
-	"authors": ["AgentVenX","Discord@agentven"],
+	"authors": ["AgentVenX","Discord@agentven","https://github.com/AgentVen"],
 	"color": "#D33E32",
 	"version": "0.1.5",
 	"autoScripts": [
 		"scripts.utils.lib.table",
 		"scripts.utils.lib.string",
 	
-		"scripts.main",
-		"scripts.PhysicsTask"
+		"scripts.utils.Enum",
+		
+		"scripts.main"
 	]
 }

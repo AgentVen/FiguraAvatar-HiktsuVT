@@ -15,31 +15,29 @@
 --- @*port* `Luau` `modified` — Added `len` & `plain` param.
 function table.find(haystack, needle, init, len, mode)
 	do -- Parameter type checking & correction
-		
 		assert(type(haystack) == 'table', 
-		("Bad argument #1; Invalid type! (Expected type(s): 'table'. Got type: '%s'.)"):format(type(haystack))
+			("Bad argument #1; Invalid type! (Expected type(s): 'table'. Got type: '%s'.)"):format(type(haystack))
 		)
 
 		assert(type(init) == 'number' or type(init) == 'nil', 
-		("Bad argument #2; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(init))
+			("Bad argument #2; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(init))
 		)
 		init = init or 1
 		if init < 0 then init = #haystack + 1 + init end
 
 		assert(type(len) == 'number' or type(len) == 'nil', 
-		("Bad argument #3; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(len))
+			("Bad argument #3; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(len))
 		)
 		len = len or -1
 		if len < 0 then len = #haystack + 1 + len end
 
 		assert(type(mode) == 'number' or type(mode) == 'nil', 
-		("Bad argument #4; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(mode))
+			("Bad argument #4; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(mode))
 		)
 		mode = mode or 0
 		assert(mode >= 0 and mode <= 2,
-		("Bad argument #4; Out of range! (Expected a number: from 0, to 2. Got number: %i.)"):format(mode)
+			("Bad argument #4; Out of range! (Expected a number: from 0, to 2. Got number: %i.)"):format(mode)
 		)
-
 	end
 
 	for i = init, len, 1 do
@@ -74,16 +72,14 @@ end
 --- @*port* `Luau` `modified` — Added `depth` param.
 function table.clone(t, depth)
 	do -- Parameter type checking & correction
-	
 		assert(type(t) == 'table',
-		("Bad argument #1; Invalid type! (Expected type(s): 'table'. Got type: '%s'.)"):format(type(t))
+			("Bad argument #1; Invalid type! (Expected type(s): 'table'. Got type: '%s'.)"):format(type(t))
 		)
 
 		assert(type(depth) == 'number' or type(depth) == 'nil',
-		("Bad argument #2; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(depth))
+			("Bad argument #2; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(depth))
 		)
 		depth = depth or 0
-
 	end
 
 	local _return = {}

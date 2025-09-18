@@ -12,41 +12,6 @@ local TAIL = {
 }
 local TEXTURE = "textures.tail"
 
---[[
-local VERTICES = setmetatable({
-	["ENU"] = 5,	["WNU"] = 11,	["UNE"] = 3,	["DNE"] = 14;
-	["END"] = 8,	["WND"] = 12,	["UNW"] = 4,	["DNW"] = 13;
-	["ESU"] = 6,	["WSU"] = 10,	["USE"] = 2,	["DSE"] = 15;
-	["ESD"] = 7,	["WSD"] = 9,	["USW"] = 1,	["DSW"] = 16;
-},{
-	__call = function(t, vertexKey, ...)
-		assert(type(vertexKey) == 'string', "Bad Argument #2; invalid type. (expected type(s): 'string', got type: '"..type(vertexKey)..".)")
-		
-		if type(...) ~= 'nil' then
-			for i = 1, select("#", ...), 1 do
-				local arg_i = select(i, ...)
-				assert(type(arg_i) == 'string', "Bad Argument #"..i + 2 .."; invalid type. (expected type(s): 'string', got type: '"..type(arg_i)..".)")
-				
-				if arg_i:find("^[NSEWUD][NSEWUD]$") then
-					local swapA,swapB = arg_i:match("([NSEWUD])([NSEWUD])")
-					vertexKey = vertexKey:gsub(".", { [""..swapA..""] = ""..swapB.."", [""..swapB..""] = ""..swapA.."" })
-				elseif arg_i:find("^[1-3][1-3][1-3]$") then
-					local newVertexKey = ""
-					for p in arg_i:gmatch("([1-3])") do
-						p = tonumber(p)
-						newVertexKey = newVertexKey..vertexKey:sub(p,p)
-					end
-					vertexKey = newVertexKey
-				else
-					error("Bad Argument #"..i + 2 .."; invalid/malformed operation.", 6)
-				end
-			end
-		end
-		
-		return t[vertexKey]
-	end		
-})
---]]
 
 ---@param t table<string, integer> # `VERTICES` table
 ---@param vertexKey string # 3 char vertexKey
@@ -82,6 +47,7 @@ local function transformVertexKey(t, vertexKey, ...)
 	end
 	return t[vertexKey]
 end
+
 local VERTICES = {
 	[0] = setmetatable({
 		["SEU"] = 34,	["SED"] = 33,	["SWU"] = 35,	["SWD"] = 36;
@@ -139,35 +105,15 @@ local VERTICES = {
 	}, { __call = transformVertexKey })
 }
 
-local VERTICES_OrignPoses = {}
+local VERTICES_OriginPoses = {}
 for bone = 0, #TAIL, 1 do
-	VERTICES_OrignPoses[bone] = {}
+	VERTICES_OriginPoses[bone] = {}
 	for _,vertexIndex in pairs(VERTICES[bone]) do
 		vertexIndex = (type(vertexIndex) == 'table' and vertexIndex[1]) or vertexIndex
-		VERTICES_OrignPoses[bone][vertexIndex] = TAIL[bone].Base:getVertices(TEXTURE)[vertexIndex]:getPos()
+		VERTICES_OriginPoses[bone][vertexIndex] = TAIL[bone].Base:getVertices(TEXTURE)[vertexIndex]:getPos()
 	end
 end
 
-
----"Gap-crossing" method, solution #1: Set Pos to Get Pos.
---[[ CONCLUSION: Complete failure!
-	Ok, so I figured out why it wasn't working. 
-
-	It's because the positions of vertices on a Mesh are *realitive* to 
-	their own *unique* 0,0,0 point, which is initally set to the 
-	"Model Space"'s 0,0,0 point. 
-	I say "initally set" because once at runtime the point's position in 
-	the "Model Space" *becomes* realitive to the Mesh, meaning changes 
-	to the Mesh's position and/or rotation would not change the 
-	positions of the vertices.
-	
-	Now, I'm not calling to change this. In fact I understand why its done this way.
-	However, some documentation on this quirk would've been nice. (Then again no
-	iteration of the documentation on Vertices is anymore than a stub..)
-	
-	But now, I know what I need to do get this finally working!
-	And it's the ton of math I was originally trying to advoid.
---]]
 
 ---"Gap-crossing" method, solution #2: Determine Pos from getting a point on the circumference of 2 circles.
 local function getVertexGapfillPosByCrossing_DoubleCircle(bone, vertexKey, Theta, Phi)
@@ -230,95 +176,6 @@ end
 	Works when rotating just on the X or just the Y, not on both.
 --]]
 
----"Gap-crossing" method, solution #3: Determine Pos from getting a point on the circumference of a sphere.
-local function getVertexGapfillPosByCrossing_Sphere(bone, vertexKey, Theta, Phi)
-	local nativeOriginPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES(vertexKey, "NS")]:getPos()
-	local siblingOriginPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES(vertexKey, "NS", "EW")]:getPos().x
-	local twinOriginPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES(vertexKey, "NS", "321")]:getPos().y
-	local cousinOriginPos = TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES(vertexKey, "NS", "321", "UD")]:getPos().y
-
-	-- This won’t work if the sides are unequal.
-	-- 
-	-- That would require us to get a point on the circumference 
-	-- of an Ellipsoid (3D ellipsis), this code is for getting 
-	-- a point on the circumference of a Sphere.
-	-- It *can* be adapted for such, if we could get `r.z`.
-	-- But getting `r.z` is just the “Double-Z to One-Z” problem all over again.
-
-	local r = vec(
-		(nativeOriginPos.x - siblingOriginPos) / 2,
-		(twinOriginPos - cousinOriginPos) / 2
- 	)
-
-	local offsetOriginPos = vec(
-		math.max(nativeOriginPos.x, siblingOriginPos) - math.abs(r.x),
-		math.max(twinOriginPos, cousinOriginPos) - math.abs(r.y),
-		nativeOriginPos.z
-	)
-
-
-	local newPos = offsetOriginPos + vec(
-		r.x * (((Theta ~= 0) and math.cos(Theta)) or Theta) * math.sin(Phi),
-		r.y * (((Phi ~= 0) and math.cos(Phi)) or Phi),
-		r.x * math.sin(Theta) * math.sin(Phi)
-	)
-
-	if newPos.z <= offsetOriginPos.z then
-		newPos = offsetOriginPos
-	end
-
-	TAIL[bone].gapfill:getVertices(TEXTURE)[VERTICES[vertexKey]]:setPos(newPos)
-
-	--return newPos --TODO: Work out UV
-end
---[[ CONCLUSION: Completely failed!
-	Just X or just Y rotation doesn't work, because of Zero-ing Out.
-	And both X and Y rotation didn't work.
---]]
-
----"Gap-crossing" method, solution #4: Set Pos to Get Pos, adjusted to be Relative to Model Origin.
----@param modelPart ModelPart
----@param vertex_index number
----@return Vector3
-local function getVertexPosRelativeToModelOrigin(modelPart, vertex_index)
-	do -- Type checking & correction
-		assert(type(modelPart) == 'ModelPart',
-			"Bad argument #1; Invaild type! (expected type(s): 'ModelPart', got: '"..type(modelPart)..".)"
-		)
-		assert(modelPart:getType():lower() == "mesh",
-			"Bad argument #1; Invaild type! (expected type(s): 'Mesh', got: '"..modelPart:getType()..".)"
-		)
-		local vertices = #modelPart:getVertices(TEXTURE)
-		assert(vertices > 0,
-			"Bad argument #1; Has no vertices for required texture!"
-		)
-
-		assert(type(vertex_index) == 'number',
-			"Bad argument #2; Invaild type! (expected type(s): 'number', got: '"..type(vertex_index)..".)"
-		)
-		assert(vertex_index >= 1 and vertex_index <= vertices,
-			"Bad argument #2; Out of range! (expected number from: 1, to: "..vertices..", got: "..vertex_index..".)"
-		)
-	end
-
-	-- TODO-INVESTIGATE/TEST:
-	-- According to the documentation, `:getTruePos()` should be exactly what we
-	-- want for getting the right Position Vector3. Including `:getPot()` and `:getAnimPot()`.
-	--
-	-- However, this needs to be tested.
-	local modelPartPos = modelPart:getTruePos()
-	-- TODO-INVESTIGATE: Look into what the vertex's normal is actually is.
-	local vertexPos = modelPart:getVertices(TEXTURE)[vertex_index]:getPos()
-
-	-- TODO: Might need expansion
-	local newVertexPos = modelPartPos + vertexPos
-
-	return newVertexPos
-end
---[[ CONCLUSION: Completely failed.
-	Same result as the original idea.
---]]
-
 ---"Deform-filling" method: Adjusting the Z of the vertices of the Base parts of BoneA and BoneB to meat in the middle, via tangents.
 local function getVertexGapfillPosByDeforming(bone, vertexKey, Theta, Phi)
 
@@ -326,10 +183,10 @@ local function getVertexGapfillPosByDeforming(bone, vertexKey, Theta, Phi)
 	-- But for vertices on the North & South faces, when getting the twin & cousin origin pos we don't want to reverse the order.
 	local orderKey = ((vertexKey:sub(1,1) == "N" or vertexKey:sub(1,1) == "S") and "123") or "321"
 
-	local nativeOriginPos = VERTICES_OrignPoses[bone][VERTICES[bone](vertexKey)]
-	local siblingOriginPos = VERTICES_OrignPoses[bone][VERTICES[bone](vertexKey, "EW")]
-	local twinOriginPos = VERTICES_OrignPoses[bone][VERTICES[bone](vertexKey, orderKey)]
-	local cousinOriginPos = VERTICES_OrignPoses[bone][VERTICES[bone](vertexKey, orderKey, "UD")]
+	local nativeOriginPos = VERTICES_OriginPoses[bone][VERTICES[bone](vertexKey)]
+	local siblingOriginPos = VERTICES_OriginPoses[bone][VERTICES[bone](vertexKey, "EW")]
+	local twinOriginPos = VERTICES_OriginPoses[bone][VERTICES[bone](vertexKey, orderKey)]
+	local cousinOriginPos = VERTICES_OriginPoses[bone][VERTICES[bone](vertexKey, orderKey, "UD")]
 
 	local r = vec(
 		(nativeOriginPos.x - siblingOriginPos.x) / 2,
@@ -351,10 +208,28 @@ end
 --[[ CONCLUSION: So far, partial success.
 --]]
 
+local function applyVertexGapfillPositionOffset(bone, vertexKey, Theta_xz, Theta_yz)
+	local vertexPos = VERTICES_OriginPoses[bone][VERTICES[bone](vertexKey)]
+	
+	local newVertexPos = vec(
+		vertexPos.x,
+		vertexPos.y,
+		vertexPos.z + math.sqrt(
+			(vertexPos.x ^ 2 + vertexPos.y ^ 2) 
+			/ (math.tan(Theta_xz / 2) ^ 2 + math.tan(Theta_yz / 2) ^ 2)
+		) -- Hopefully this is how you combind r_xz * tan(Theta_xz / 2) & r_yz * tan(Theta_yz / 2)
+	)
+	
+	TAIL[bone].Base:getVertices(TEXTURE)[VERTICES[bone](vertexKey)]:setPos(newVertexPos)
+	-- If a doubled vertex, set the pos of the other vertex
+	if type(VERTICES[bone][vertexKey]) == 'table' then
+		TAIL[bone].Base:getVertices(TEXTURE)[VERTICES[bone][vertexKey][2]]:setPos(newVertexPos)
+	end
+end
 
-events.RENDER:register(function (delta, context, matrix)
+events.RENDER:register(function(delta, context, matrix)
 
-	--[[ TODO: Update this, or delete it
+	--[[ TODO)) Update this, or delete it
 		-- Whats going on here:
 		-- 
 		-- 
@@ -412,7 +287,7 @@ events.RENDER:register(function (delta, context, matrix)
 	--]]
 
 	for bone = 0, #TAIL - 1, 1 do
-		--[[
+	--[[
 		if bone < 3 then
 			-- TODO-INVESTIGATE/TEST:
 			-- According to the documentation, `:getTrueRot()` should be exactly what we
@@ -432,8 +307,9 @@ events.RENDER:register(function (delta, context, matrix)
 			getVertexGapfillPosByCrossing_DoubleCircle(bone, "DSW", Theta, Phi)
 		elseif bone > 3 then
 		end
-		--]]
+	--]]
 
+	--[[
 		local Theta, Phi = TAIL[bone + 1]:getTrueRot():toRad():unpack()
 		getVertexGapfillPosByDeforming(bone, "ESU", Theta, Phi)
 		getVertexGapfillPosByDeforming(bone, "ESD", Theta, Phi)
@@ -460,6 +336,34 @@ events.RENDER:register(function (delta, context, matrix)
 		getVertexGapfillPosByDeforming(bone + 1, "NEU", -Theta, -Phi)
 		getVertexGapfillPosByDeforming(bone + 1, "NWU", -Theta, -Phi)
 		getVertexGapfillPosByDeforming(bone + 1, "NWD", -Theta, -Phi)
+	--]]
+
+		local Theta_xz, Theta_yz = TAIL[bone + 1]:getTrueRot():toRad():unpack()
+		applyVertexGapfillPositionOffset(bone, "ESU", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "ESD", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "WSD", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "WSU", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "USE", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "USW", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "DSE", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "DSW", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "SED", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "SEU", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "SWU", Theta_xz, Theta_yz)
+		applyVertexGapfillPositionOffset(bone, "SWD", Theta_xz, Theta_yz)
+
+		applyVertexGapfillPositionOffset(bone + 1, "ENU", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "END", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "WND", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "WNU", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "UNE", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "UNW", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "DNE", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "DNW", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "NED", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "NEU", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "NWU", -Theta_xz, -Theta_yz)
+		applyVertexGapfillPositionOffset(bone + 1, "NWD", -Theta_xz, -Theta_yz)
 	end
 
 end, "FoxTailHandler-RENDER")
@@ -502,7 +406,7 @@ events.TICK:register(function()
 end, "FoxTailHandler-TICK")
 
 
--- DEBUG
+-- [DEBUG]
 local PART = TAIL[3].Base
 
 local FaceGroups = { {} }

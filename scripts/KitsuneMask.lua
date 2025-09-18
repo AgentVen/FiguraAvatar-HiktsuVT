@@ -1,9 +1,9 @@
----@class KitsuneMask # Hiktsu's kitsune mask
----@field MaskState # Current mask state
+---@class KitsuneMask # Hiktsu's kitsune mask.
+---@field MaskState # Current mask state.
 ---| 0 # Disabled
 ---| 1 # Enabled
 ---| 2 # Offsetted
-local KitsuneMask = {
+KitsuneMask = {
 	MaskState = 2
 }
 
@@ -12,7 +12,7 @@ local MASK_FOX = models.models.mask_fox.root.Head
 
 local MASK_FOX_OFFSET_POSITION = vec(-1, 2, 0)
 local MASK_FOX_OFFSET_ROTATION = vec(21.444, 54.4363, 5.151)
-local DANGLE_OFFSET_ROTATION = vec(-17.5486, 0.7625, -3.6039)
+--local DANGLE_OFFSET_ROTATION = vec(-17.5486, 0.7625, -3.6039)
 local DANGLE_RIGHT_OFFSET_POSITION = vec(-6.4273, 3.575, -1.4928)
 local DANGLE_RIGHT_OFFSET_ROTATION = vec(0, -35, 0)
 local DANGLE_LEFT_OFFSET_POSITION = vec(-2.8586, 3.125, 5.4241)
@@ -56,7 +56,7 @@ local function dangleRightPhysicsRotationCorrection()
 	local headPitch = player:getRot().x
 
 	-- Isolating the x, so that we can use "If" statments
-	-- 
+	-- git
 	-- We clamp the x so that is looks like it gets cought on soild objects.
 	local x = 0
 	if KitsuneMask.MaskState == 1 then
@@ -161,8 +161,6 @@ local function setupMaskForState(maskState)
 	end
 end
 
-
--- State change handling on every RENDER event
 events.RENDER:register(function(delta, renderContext, matrix)
 	
 	setupMaskForState(KitsuneMask.MaskState)
@@ -171,3 +169,6 @@ events.RENDER:register(function(delta, renderContext, matrix)
 	MASK_FOX.mask_dangle_right:setRot(dangleRightPhysicsRotationCorrection())
 
 end, "KitsuneMask-RENDER")
+
+
+return KitsuneMask

@@ -11,26 +11,24 @@
 --- @*port* `Luau` `modified` — Added `init` & `plain` param.
 function string.split(self, sep, init, plain)
 	do -- Parameter type checking & correction
-	
 		assert(type(self) == 'string', 
-		("Bad argument #1; Invalid type! (Expected type(s): 'string'. Got type: '%s'.)"):format(type(self))
+			("Bad argument #1; Invalid type! (Expected type(s): 'string'. Got type: '%s'.)"):format(type(self))
 		)
 
 		assert(type(sep) == 'string' or type(sep) == 'nil',
-		("Bad argument #2; Invalid type! (Expected type(s): 'string', or 'nil'. Got type: '%s'.)"):format(type(sep))
+			("Bad argument #2; Invalid type! (Expected type(s): 'string', or 'nil'. Got type: '%s'.)"):format(type(sep))
 		)
 		sep = sep or ","
 
 		assert(type(init) == 'number' or type(init) == 'nil',
-		("Bad argument #3; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(init))
+			("Bad argument #3; Invalid type! (Expected type(s): 'number', or 'nil'. Got type: '%s'.)"):format(type(init))
 		)
 		init = init or 1
 
 		assert(type(plain) == 'boolean' or type(plain) == 'nil',
-		("Bad argument #4; Invalid type! (Expected type(s): 'boolean', or 'nil'. Got type: '%s'.)"):format(type(plain))
+			("Bad argument #4; Invalid type! (Expected type(s): 'boolean', or 'nil'. Got type: '%s'.)"):format(type(plain))
 		)
 		if plain == nil then plain = true end
-
 	end
 
 	local _return = {}
